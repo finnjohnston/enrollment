@@ -15377,7 +15377,9 @@
         "description": "Advanced data structures, systematic study and analysis of important algorithms for searching; sorting; string processing; mathematical, geometrical, and graph algorithms, classes of P and NP, NP-complete and intractable problems. Prerequisite: CS 2201, CS 2212. FALL, SPRING. [3]",
         "prereqs": [
             [
-                "CS 2201",
+                "CS 2201"
+            ],
+            [
                 "CS 2212"
             ]
         ],
@@ -15866,7 +15868,9 @@
         "description": "Principles and programming techniques of artificial intelligence. Strategies for searching, representation of knowledge and automatic deduction, learning, and adaptive systems. Survey of applications. Prerequisite: CS 3250, CS 3251; MATH 2810 or 2820 or 3640. FALL. [3]",
         "prereqs": [
             [
-                "CS 3250",
+                "CS 3250"
+            ],
+            [
                 "CS 3251"
             ],
             [
