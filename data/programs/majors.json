@@ -1,0 +1,147 @@
+[
+    {
+        "name": "Computer Science",
+        "type": "major",
+        "total_credits": 120,
+        "categories": [
+            {
+                "category": "Mathematics - Calculus/Linear Algebra",
+                "min_credits": 14,
+                "requirements": [
+                    {
+                        "type": "compound",
+                        "options": [
+                            {"type": "course_list", "courses": ["MATH 1300", "MATH 1301", "MATH 2300", "MATH 2410"]},
+                            {"type": "course_list", "courses": ["MATH 1300", "MATH 1301", "MATH 2300", "MATH 2600"]},
+                            {"type": "course_list", "courses": ["MATH 1300", "MATH 1301", "MATH 2500", "MATH 2501"]}
+                        ]
+                    }
+                ]
+            },
+            {
+                "category": "Mathematics - Statistics/Probability",
+                "min_credits": 3,
+                "requirements": [
+                    {"type": "course_options", "options": ["MATH 2810", "MATH 2820", "MATH 3640"], "min_required": 1}
+                ]
+            },
+            {
+                "category": "Science",
+                "min_credits": 12,
+                "requirements": [
+                    {"type": "course_options", "options": [
+                        "BSCI 1100", "BSCI 1100L", "BSCI 1510", "BSCI 1510L", "BSCI 1511", "BSCI 1511L",
+                        "BSCI 2218", "BSCI 2219", "CHEM 1601", "CHEM 1601L", "CHEM 1602", "CHEM 1602L",
+                        "EES 1510", "EES 1510L", "MSE 1500", "MSE 1500L", "PHYS 1601", "PHYS 1601L",
+                        "PHYS 1602", "PHYS 1602L"
+                    ]}
+                ],
+                "notes": "Must include at least one laboratory course."
+            },
+            {
+                "category": "Introduction to Engineering",
+                "min_credits": 3,
+                "requirements": [
+                    {"type": "course_list", "courses": ["ES 1401", "ES 1402", "ES 1403"]}
+                ]
+            },
+            {
+                "category": "Liberal Arts Core",
+                "min_credits": 18,
+                "requirements": [
+                    {"type": "course_filter", "tags": ["HCA"], "min_credits": 3},
+                    {"type": "course_filter", "tags": ["SBS"], "min_credits": 3},
+                    {"type": "course_filter", "tags": ["HCA", "SBS", "US", "INT", "P"], "min_credits": 12}
+                ]
+            },
+            {
+                "category": "Computer Science Core",
+                "min_credits": 25,
+                "requirements": [
+                    {"type": "course_list", "courses": [
+                        "CS 1101", "CS 2201", "CS 2212", "CS 3250",
+                        "CS 3251", "CS 3270", "CS 3281", "CS 2281", "CS 2281L"
+                    ]}
+                ]
+            },
+            {
+                "category": "Computer Science Depth",
+                "min_credits": 15,
+                "requirements": [
+                    {
+                        "type": "course_options",
+                        "options": [
+                            "CS 3250", "CS 3251", "CS 3252", "CS 3253", "CS 3254", "CS 3255", "CS 3258", "CS 3259", "CS 3265", "CS 3270", "CS 3274", "CS 3276", "CS 3281", "CS 3282", "CS 3860", "CS 3861", "CS 3862", "CS 3891", "CS 3892", "CS 4239", "CS 4240", "CS 4247", "CS 4249", "CS 4260", "CS 4262", "CS 4266", "CS 4267", "CS 4269", "CS 4275", "CS 4277", "CS 4278", "CS 4279", "CS 4284", "CS 4285", "CS 4286", "CS 4287", "CS 4288", "CS 4289", "CS 4352", "CS 4359", "CS 4375", "CS 4375L", "CS 4376", "CS 4383", "CS 4959", "ECE 4353", "ECE 4354", "ECE 4375", "MATH 3320", "MATH 3620", "MATH 4600", "MATH 4620"
+                          ]
+                    }
+                ],
+                "restrictions": {
+                    "type": "group",
+                    "restrictions": [
+                        {"type": "exclusion", "excluded_course_codes": ["CS 3262"]},
+                        {"type": "course_group", "courses": ["MATH 3320", "MATH 3620", "MATH 4600", "MATH 4620"], "max_credits": 6},
+                        {"type": "course_group", "courses": ["CS 3860", "CS 3861"], "max_credits": 6}
+                    ]
+                }
+            },
+            {
+                "category": "Computer Science Project",
+                "min_credits": 3,
+                "requirements": [
+                    {"type": "course_options", "options": [
+                        "CS 3862", "CS 3892", "CS 4239", "CS 4249", "CS 4269",
+                        "CS 4279", "CS 4287", "CS 4289", "CS 4359"
+                    ]}
+                ]
+            },
+            {
+                "category": "Computer Science Seminar",
+                "min_credits": 1,
+                "requirements": [
+                    {"type": "course_list", "courses": ["CS 4959"]}
+                ]
+            },
+            {
+                "category": "Technical Electives",
+                "min_credits": 6,
+                "requirements": [
+                    {
+                        "type": "compound",
+                        "options": [
+                            {"type": "course_filter", "subject": "BME", "min_level": 2000, "min_credits": 0},
+                            {"type": "course_filter", "subject": "CHBE", "min_level": 2000, "min_credits": 0},
+                            {"type": "course_filter", "subject": "CE", "min_level": 2000, "min_credits": 0},
+                            {"type": "course_filter", "subject": "ECE", "min_level": 2000, "min_credits": 0},
+                            {"type": "course_filter", "subject": "ENGM", "min_level": 2000, "min_credits": 0},
+                            {"type": "course_filter", "subject": "ES", "min_level": 2000, "min_credits": 0},
+                            {"type": "course_filter", "subject": "ENVE", "min_level": 2000, "min_credits": 0},
+                            {"type": "course_filter", "subject": "CS", "min_level": 3000, "min_credits": 0},
+                            {"type": "course_filter", "tags": ["MNS"], "min_level": 2000, "min_credits": 0}
+                        ]
+                    }
+                ],
+                "restrictions": {
+                    "type": "group",
+                    "restrictions": [
+                        {"type": "exclusion", "excluded_course_codes": [
+                            "ENGM 2440", "ENGM 4800", "ES 2700", "ES 3884",
+                            "CS 1101", "CS 2201", "CS 2212", "CS 2281", "CS 2281L"
+                        ]},
+                        {"type": "exclusion", "excluded_numbers": [2860]}
+                    ]
+                }
+            },
+            {
+                "category": "Open Electives",
+                "min_credits": 18
+            },
+            {
+                "category": "Computers and Ethics",
+                "min_credits": 3,
+                "requirements": [
+                    {"type": "course_list", "courses": ["CS 1151"]}
+                ]
+            }
+        ]
+    }
+]
