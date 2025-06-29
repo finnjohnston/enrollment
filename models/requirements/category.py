@@ -53,6 +53,27 @@ class RequirementCategory:
             "notes": self.notes
         }
 
+    def get_completed_courses(self, completed_courses: List[Course]) -> List[Course]:
+        """Returns completed courses that satisfy any requirement in this category."""
+        all_completed = []
+        for req in self.requirements:
+            try:
+                req_completed = req.get_completed_courses(completed_courses)
+                all_completed.extend(req_completed)
+            except Exception as e:
+                print(f"Warning: Error getting completed courses for requirement {req}: {e}")
+                continue
+        
+        # Remove duplicates by course code
+        seen_codes = set()
+        unique_courses = []
+        for course in all_completed:
+            code = course.get_course_code()
+            if code and code not in seen_codes:
+                seen_codes.add(code)
+                unique_courses.append(course)
+        
+        return unique_courses
     
     def describe(self) -> str:
         lines = [f"Category: {self.category}", f"Minimum Credits: {self.min_credits}"]

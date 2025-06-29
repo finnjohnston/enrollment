@@ -14,6 +14,14 @@ class Requirement:
     
     def satisfied_credits(self, completed_courses: List[Course]) -> int:
         raise NotImplementedError("Subclasses must implement satisfied_credits()")
+    
+    def get_completed_courses(self, completed_courses: List[Course]) -> List[Course]:
+        """Returns the subset of completed_courses that satisfy this requirement."""
+        raise NotImplementedError("Subclasses must implement get_completed_courses()")
+    
+    def get_possible_courses(self, courses: List[Course]) -> List[Course]:
+        """Returns all courses from the provided list that could satisfy this requirement."""
+        raise NotImplementedError("Subclasses must implement get_possible_courses()")
 
 def extract_course_codes(reqs: Any) -> List[List[str]]:
     """

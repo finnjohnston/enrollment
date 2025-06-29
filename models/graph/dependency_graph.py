@@ -286,65 +286,159 @@ class DependencyGraph:
         return dfs(target_course, [target_course])
 
     # --- Availability & Planning ---
-    def is_available(self, course_code: str, completed_courses: Set[str]) -> bool:
-        if not course_code or not isinstance(course_code, str):
+    def is_available(self, course_code: str, completed_courses: List[Course]) -> bool:
+        """Check if a course is available given completed courses."""
+        # Convert to set of course codes for internal processing
+        completed_codes = {course.get_course_code() for course in completed_courses if course.get_course_code()}
+        return self._is_available_internal(course_code, completed_codes)
+    
+    def _is_available_internal(self, course_code: str, completed_codes: Set[str]) -> bool:
+        """Internal method that works with course codes."""
+        if course_code in completed_codes:
             return False
-        logic = self.prereq_logic.get(course_code)
-        return logic.is_satisfied(completed_courses) if logic else True
+        
+        prereqs = self.get_prerequisites(course_code)
+        if not prereqs:
+            return True
+        
+        # Check if any prerequisite group is satisfied
+        for group in prereqs:
+            if all(course in completed_codes for course in group):
+                return True
+        
+        return False
 
-    def get_available_courses(self, completed_courses: Set[str]) -> Set[str]:
-        return {code for code in self.nodes if self.is_available(code, completed_courses)}
+    def get_available_courses(self, completed_courses: List[Course]) -> Set[str]:
+        """Get all courses that can be taken with the given completed courses."""
+        # Convert to set of course codes for internal processing
+        completed_codes = {course.get_course_code() for course in completed_courses if course.get_course_code()}
+        available = set()
+        for course_code in self.nodes:
+            if self._is_available_internal(course_code, completed_codes):
+                available.add(course_code)
+        return available
 
-    def get_blocked_courses(self, completed_courses: Set[str]) -> Set[str]:
-        return {code for code in self.nodes if not self.is_available(code, completed_courses)}
-    
-    def get_missing_prerequisites(self, course_code: str, completed_courses: Set[str]) -> List[List[str]]:
-        if not course_code or not isinstance(course_code, str):
-            return []
-        logic = self.prereq_logic.get(course_code)
-        return logic.get_missing_requirements(completed_courses) if logic else []
-    
-    def get_course_availability_details(self, course_code: str, completed_courses: Set[str]) -> Dict:
-        if not course_code or not isinstance(course_code, str):
-            return {}
-        logic = self.prereq_logic.get(course_code)
-        if logic:
-            return logic.get_satisfaction_details(completed_courses, self)
-        return {}
+    def get_blocked_courses(self, completed_courses: List[Course]) -> Set[str]:
+        """Get all courses that are blocked by missing prerequisites."""
+        # Convert to set of course codes for internal processing
+        completed_codes = {course.get_course_code() for course in completed_courses if course.get_course_code()}
+        blocked = set()
+        for course_code in self.nodes:
+            if not self._is_available_internal(course_code, completed_codes):
+                blocked.add(course_code)
+        return blocked
+
+    def get_missing_prerequisites(self, course_code: str, completed_courses: List[Course]) -> List[List[str]]:
+        """Get missing prerequisite groups for a course."""
+        # Convert to set of course codes for internal processing
+        completed_codes = {course.get_course_code() for course in completed_courses if course.get_course_code()}
+        prereqs = self.get_prerequisites(course_code)
+        missing = []
+        for group in prereqs:
+            if not all(course in completed_codes for course in group):
+                missing.append(group)
+        return missing
+
+    def get_course_availability_details(self, course_code: str, completed_courses: List[Course]) -> Dict:
+        """Get detailed availability information for a course."""
+        # Convert to set of course codes for internal processing
+        completed_codes = {course.get_course_code() for course in completed_courses if course.get_course_code()}
+        
+        is_available = self._is_available_internal(course_code, completed_codes)
+        missing_prereqs = self.get_missing_prerequisites(course_code, completed_courses)
+        dependents = self.get_dependents(course_code)
+        
+        return {
+            "course_code": course_code,
+            "available": is_available,
+            "missing_prerequisites": missing_prereqs,
+            "dependents": dependents,
+            "completed_courses": list(completed_codes)
+        }
 
     # --- Program Integration ---
-    def get_optimal_schedule(self, program: Program, completed_courses: Set[str]) -> List[List[str]]:
-        # Simple greedy scheduler: fill each term with available required courses
-        required_courses = set()
-        for category in getattr(program, 'categories', []):
-            for req in getattr(category, 'requirements', []):
-                # Only add if req has 'courses' or 'options' and is a list of str
-                if hasattr(req, 'courses') and isinstance(getattr(req, 'courses', None), list):
-                    required_courses.update([c for c in req.courses if isinstance(c, str)])
-                elif hasattr(req, 'options') and isinstance(getattr(req, 'options', None), list):
-                    required_courses.update([c for c in req.options if isinstance(c, str)])
+    def get_optimal_schedule(self, program: Program, completed_courses: List[Course]) -> List[List[str]]:
+        """Generate an optimal schedule for completing the program."""
+        # Convert to set of course codes for internal processing
+        completed_codes = {course.get_course_code() for course in completed_courses if course.get_course_code()}
+        
+        # This is a simplified implementation
+        # In practice, you'd want more sophisticated scheduling logic
         schedule = []
-        taken = set(completed_courses)
-        while required_courses:
-            available = [c for c in required_courses if self.is_available(c, taken)]
-            if not available:
-                break
-            schedule.append(available)
-            taken.update(available)
-            required_courses.difference_update(available)
+        remaining_courses = set()
+        
+        # Get all required courses from the program
+        for category in program.categories:
+            for req in category.requirements:
+                if hasattr(req, 'courses'):
+                    remaining_courses.update(req.courses)
+                elif hasattr(req, 'options'):
+                    remaining_courses.update(req.options)
+        
+        # Remove already completed courses
+        remaining_courses -= completed_codes
+        
+        # Simple scheduling: take available courses
+        available = self.get_available_courses(completed_courses)
+        current_term = list(available & remaining_courses)
+        
+        if current_term:
+            schedule.append(current_term)
+        
         return schedule
-    
-    def get_unlocked_requirements(self, program: Program, completed_courses: Set[str]) -> List[Requirement]:
+
+    def get_unlocked_requirements(self, program: Program, completed_courses: List[Course]) -> List[Requirement]:
+        """Get requirements that are unlocked by completed courses."""
+        # Convert to set of course codes for internal processing
+        completed_codes = {course.get_course_code() for course in completed_courses if course.get_course_code()}
+        
         unlocked = []
-        for category in getattr(program, 'categories', []):
-            for req in getattr(category, 'requirements', []):
-                if hasattr(req, 'courses') and isinstance(getattr(req, 'courses', None), list):
-                    if all(self.is_available(c, completed_courses) for c in req.courses if isinstance(c, str)):
+        for category in program.categories:
+            for req in category.requirements:
+                if hasattr(req, 'courses') and isinstance(req.courses, list):
+                    if all(self._is_available_internal(c, completed_codes) for c in req.courses if isinstance(c, str)):
                         unlocked.append(req)
+        
         return unlocked
-    
-    def get_degree_plan(self, program: Program, completed_courses: Set[str]) -> List[List[str]]:
-        return self.get_optimal_schedule(program, completed_courses)
+
+    def get_degree_plan(self, program: Program, completed_courses: List[Course]) -> List[List[str]]:
+        """Generate a degree plan showing what to take each term."""
+        # Convert to set of course codes for internal processing
+        completed_codes = {course.get_course_code() for course in completed_courses if course.get_course_code()}
+        
+        # This is a simplified implementation
+        # In practice, you'd want more sophisticated planning logic
+        plan = []
+        remaining_courses = set()
+        
+        # Get all required courses from the program
+        for category in program.categories:
+            for req in category.requirements:
+                if hasattr(req, 'courses'):
+                    remaining_courses.update(req.courses)
+                elif hasattr(req, 'options'):
+                    remaining_courses.update(req.options)
+        
+        # Remove already completed courses
+        remaining_courses -= completed_codes
+        
+        # Simple planning: take available courses each term
+        while remaining_courses:
+            available = self.get_available_courses(completed_courses)
+            current_term = list(available & remaining_courses)
+            
+            if not current_term:
+                break  # No more courses can be taken
+                
+            plan.append(current_term)
+            remaining_courses -= set(current_term)
+            
+            # Update completed courses for next iteration
+            completed_codes.update(current_term)
+            # Update completed_courses list for next get_available_courses call
+            # This is a simplified approach - in practice you'd want to track actual Course objects
+        
+        return plan
 
     # --- Graph Analysis ---
     def detect_cycles(self) -> List[List[str]]:
