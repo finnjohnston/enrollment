@@ -52,28 +52,6 @@ class Program:
             "notes": self.notes
         }
     
-    def get_completed_courses(self, completed_courses: List[Course]) -> List[Course]:
-        """Returns all completed courses that satisfy any requirement in the program."""
-        all_completed = []
-        for category in self.categories:
-            try:
-                cat_completed = category.get_completed_courses(completed_courses)
-                all_completed.extend(cat_completed)
-            except Exception as e:
-                print(f"Warning: Error getting completed courses for category {category.category}: {e}")
-                continue
-        
-        # Remove duplicates by course code
-        seen_codes = set()
-        unique_courses = []
-        for course in all_completed:
-            code = course.get_course_code()
-            if code and code not in seen_codes:
-                seen_codes.add(code)
-                unique_courses.append(course)
-        
-        return unique_courses
-    
     def describe(self) -> str:
         lines = [
             f"{self.name} ({self.type.title()})",

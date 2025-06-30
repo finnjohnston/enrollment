@@ -10,6 +10,7 @@ from models.requirements.program_builder import ProgramBuilder
 from models.graph.dependency_graph import DependencyGraph
 from models.planning.plan_config import PlanConfig
 from models.planning.semester import Semester
+from models.planning.plan import Plan
 
 with open("data/courses/parsed.json", 'r') as f:
     courses_data = json.load(f)
@@ -21,10 +22,6 @@ with open("data/programs/majors.json", 'r') as f:
     cs_major_data = majors_data[0]
     cs_major = ProgramBuilder.build_program(cs_major_data)
 
-completed_codes = ["MATH 1300", "MATH 1301", "MATH 2300", "MATH 2600"]
-completed_courses = [catalog.get_by_course_code(code) for code in completed_codes]
-completed_courses = [c for c in completed_courses if c is not None]
-
-plan_config = PlanConfig([cs_major], completed_courses)
-
-semester = Semester("Fall", 2025)
+completed_courses = []
+plan_config = PlanConfig([cs_major], completed_courses, "Fall", 2024, 4)
+plan = Plan([Semester("Fall", 2025), Semester("Spring", 2026)])

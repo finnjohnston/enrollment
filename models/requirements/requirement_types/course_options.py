@@ -21,12 +21,6 @@ class CourseOptionsRequirement(Requirement):
         ]
         return sum(matching[:self.min_required])
 
-    def get_completed_courses(self, completed_courses):
-        """Returns the subset of completed_courses that satisfy this requirement."""
-        matching_courses = [course for course in completed_courses if course.get_course_code() in self.options]
-        # Return up to min_required courses
-        return matching_courses[:self.min_required]
-
     def get_possible_courses(self, courses):
         filtered = [course for course in courses if course.get_course_code() in self.options]
         if self.restrictions:
