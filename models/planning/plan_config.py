@@ -8,15 +8,7 @@ class PlanConfig:
     Holds all information about a student's academic plan at a point in time, including
     start term and planning horizon.
     """
-    def __init__(
-        self,
-        programs: List[Program],
-        completed_courses: List[Course],
-        start_season: str,
-        start_year: int,
-        num_years: int
-    ):
-        """Initialize PlanConfig with programs, completed courses, and planning timeline."""
+    def __init__(self, programs: List[Program], completed_courses: List[Course], start_season: str, start_year: int, num_years: int):
         self.programs = programs
         self.completed_courses = completed_courses
         self.start_season = start_season
@@ -30,7 +22,6 @@ class PlanConfig:
         )
 
     def to_dict(self) -> Dict[str, Any]:
-        """Serialize the PlanConfig to a dictionary for saving or transmission."""
         return {
             'programs': [self._program_to_dict(p) for p in self.programs],
             'completed_courses': [c.to_dict() for c in self.completed_courses],
@@ -41,11 +32,6 @@ class PlanConfig:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any], program_loader, course_loader) -> 'PlanConfig':
-        """
-        Deserialize a PlanConfig from a dictionary.
-        program_loader: function that takes a dict and returns a Program
-        course_loader: function that takes a dict and returns a Course
-        """
         programs = [program_loader(p) for p in data.get('programs', [])]
         completed_courses = [course_loader(c) for c in data.get('completed_courses', [])]
         start_season = data['start_season']
@@ -54,7 +40,6 @@ class PlanConfig:
         return cls(programs, completed_courses, start_season, start_year, num_years)
 
     def validate(self) -> bool:
-        """Check that the PlanConfig is not broken (basic validation)."""
         if not self.programs or not isinstance(self.programs, list):
             return False
         if not isinstance(self.completed_courses, list):
@@ -69,5 +54,4 @@ class PlanConfig:
 
     @staticmethod
     def _program_to_dict(program: Program) -> Dict[str, Any]:
-        """Helper to serialize a Program. Replace with full serialization as needed."""
         return {'description': program.describe()} 
