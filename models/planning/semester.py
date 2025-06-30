@@ -15,7 +15,6 @@ class Semester:
 
     @property
     def term_id(self) -> str:
-        """Return a string identifier for the term, e.g., 'Fall 2025'."""
         return f"{self.season} {self.year}"
 
     def __repr__(self):
@@ -24,7 +23,6 @@ class Semester:
         )
 
     def to_dict(self) -> Dict[str, Any]:
-        """Serialize the Semester to a dictionary."""
         return {
             'season': self.season,
             'year': self.year,
@@ -34,10 +32,6 @@ class Semester:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any], course_loader) -> 'Semester':
-        """
-        Deserialize a Semester from a dictionary.
-        course_loader: function that takes a dict and returns a Course
-        """
         planned_courses = [course_loader(c) for c in data.get('planned_courses', [])]
         return cls(
             season=data['season'],
