@@ -5,6 +5,49 @@
         "total_credits": 120,
         "categories": [
             {
+                "category": "Open Electives",
+                "min_credits": 18
+            },
+            {
+                "category": "Liberal Arts Core",
+                "min_credits": 18,
+                "requirements": [
+                    {"type": "course_list", "courses": ["CS 1151"]},
+                    {"type": "course_filter", "tags": ["HCA"], "min_credits": 3},
+                    {"type": "course_filter", "tags": ["SBS"], "min_credits": 3},
+                    {"type": "course_filter", "tags": ["HCA", "SBS", "US", "INT", "P"], "min_credits": 12}
+                ]
+            },
+            {
+                "category": "Technical Electives",
+                "min_credits": 6,
+                "requirements": [
+                    {
+                        "type": "compound",
+                        "options": [
+                            {"type": "course_filter", "subject": "BME", "min_level": 2000, "min_credits": 0},
+                            {"type": "course_filter", "subject": "CHBE", "min_level": 2000, "min_credits": 0},
+                            {"type": "course_filter", "subject": "CE", "min_level": 2000, "min_credits": 0},
+                            {"type": "course_filter", "subject": "ECE", "min_level": 2000, "min_credits": 0},
+                            {"type": "course_filter", "subject": "ENGM", "min_level": 2000, "min_credits": 0},
+                            {"type": "course_filter", "subject": "ES", "min_level": 2000, "min_credits": 0},
+                            {"type": "course_filter", "subject": "ENVE", "min_level": 2000, "min_credits": 0},
+                            {"type": "course_filter", "subject": "CS", "min_level": 3000, "min_credits": 0},
+                            {"type": "course_filter", "tags": ["MNS"], "min_level": 2000, "min_credits": 0}
+                        ]
+                    }
+                ],
+                "restrictions": {
+                    "type": "group",
+                    "restrictions": [
+                        {"type": "exclusion", "excluded_course_codes": [
+                            "ENGM 2440", "ENGM 4800", "ES 2700", "ES 3884"
+                        ]},
+                        {"type": "exclusion", "excluded_numbers": [2860]}
+                    ]
+                }
+            },
+            {
                 "category": "Mathematics - Calculus/Linear Algebra",
                 "min_credits": 14,
                 "requirements": [
@@ -43,16 +86,6 @@
                 "min_credits": 3,
                 "requirements": [
                     {"type": "course_list", "courses": ["ES 1401", "ES 1402", "ES 1403"]}
-                ]
-            },
-            {
-                "category": "Liberal Arts Core",
-                "min_credits": 18,
-                "requirements": [
-                    {"type": "course_list", "courses": ["CS 1151"]},
-                    {"type": "course_filter", "tags": ["HCA"], "min_credits": 3},
-                    {"type": "course_filter", "tags": ["SBS"], "min_credits": 3},
-                    {"type": "course_filter", "tags": ["HCA", "SBS", "US", "INT", "P"], "min_credits": 12}
                 ]
             },
             {
@@ -101,39 +134,6 @@
                 "requirements": [
                     {"type": "course_list", "courses": ["CS 4959"]}
                 ]
-            },
-            {
-                "category": "Technical Electives",
-                "min_credits": 6,
-                "requirements": [
-                    {
-                        "type": "compound",
-                        "options": [
-                            {"type": "course_filter", "subject": "BME", "min_level": 2000, "min_credits": 0},
-                            {"type": "course_filter", "subject": "CHBE", "min_level": 2000, "min_credits": 0},
-                            {"type": "course_filter", "subject": "CE", "min_level": 2000, "min_credits": 0},
-                            {"type": "course_filter", "subject": "ECE", "min_level": 2000, "min_credits": 0},
-                            {"type": "course_filter", "subject": "ENGM", "min_level": 2000, "min_credits": 0},
-                            {"type": "course_filter", "subject": "ES", "min_level": 2000, "min_credits": 0},
-                            {"type": "course_filter", "subject": "ENVE", "min_level": 2000, "min_credits": 0},
-                            {"type": "course_filter", "subject": "CS", "min_level": 3000, "min_credits": 0},
-                            {"type": "course_filter", "tags": ["MNS"], "min_level": 2000, "min_credits": 0}
-                        ]
-                    }
-                ],
-                "restrictions": {
-                    "type": "group",
-                    "restrictions": [
-                        {"type": "exclusion", "excluded_course_codes": [
-                            "ENGM 2440", "ENGM 4800", "ES 2700", "ES 3884"
-                        ]},
-                        {"type": "exclusion", "excluded_numbers": [2860]}
-                    ]
-                }
-            },
-            {
-                "category": "Open Electives",
-                "min_credits": 18
             }
         ]
     }
