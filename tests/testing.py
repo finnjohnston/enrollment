@@ -1,6 +1,7 @@
 import json
 import sys
 from pathlib import Path
+import types
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -10,6 +11,7 @@ from models.graph.dependency_graph import DependencyGraph
 from models.planning.plan_config import PlanConfig
 from models.planning.semester import Semester
 from models.planning.plan import Plan
+from models.courses.course import Course
 
 with open("data/courses/parsed.json", 'r') as f:
     courses_data = json.load(f)

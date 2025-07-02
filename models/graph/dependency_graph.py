@@ -280,16 +280,41 @@ class DependencyGraph:
 
     # === AVAILABILITY & PLANNING ===
     
-    def _is_available_internal(self, course_code: str, completed_codes: Set[str]) -> bool:
-        """Internal method that works with course codes."""
+    def _is_available_internal(self, course_code: str, completed_codes: Set[str], visiting: Optional[Set[str]] = None) -> bool:
+        """Internal method that works with course codes, now includes corequisite logic and avoids infinite recursion for mutual coreqs."""
+        if visiting is None:
+            visiting = set()
         if course_code in completed_codes:
             return False
-        
-        logic = self.prereq_logic.get(course_code)
-        if not logic:
+        if course_code in visiting:
+            # Already visiting this course in the current path, treat as available to break cycles
             return True
-        
-        return logic.is_satisfied(completed_codes)
+        visiting = set(visiting)
+        visiting.add(course_code)
+
+        # Check prerequisites
+        logic = self.prereq_logic.get(course_code)
+        if logic and not logic.is_satisfied(completed_codes):
+            return False
+
+        # Check corequisites
+        coreq_logic = self.coreq_logic.get(course_code)
+        if not coreq_logic or not coreq_logic.groups:
+            return True  # No coreqs, available
+
+        all_coreq_courses = coreq_logic.get_all_courses()
+        for coreq in all_coreq_courses:
+            other_coreq_logic = self.coreq_logic.get(coreq)
+            if other_coreq_logic and course_code in other_coreq_logic.get_all_courses():
+                if coreq in completed_codes:
+                    # If the mutual corequisite is already completed, cannot take this course
+                    return False
+                if coreq not in completed_codes:
+                    # Recursively check if the coreq is available, passing the visiting set
+                    if not self._is_available_internal(coreq, completed_codes, visiting):
+                        return False
+        # If no mutual locks block, assume coreqs can be taken together
+        return True
 
     # === UTILITY METHODS ===
     
