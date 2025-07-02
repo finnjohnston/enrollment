@@ -15,55 +15,78 @@ from models.graph.dependency_graph import DependencyGraph
 from models.planning.category_assignment import CategoryAssignmentManager
 
 # === User Configuration ===
-# Specify category assignments for ambiguous courses here
-user_category_assignments = {
-    "ECON 1010": "Liberal Arts Core",
-    "ENGL 1230W": "Liberal Arts Core",
-    "ECON 1020": "Liberal Arts Core"
-}
-
-# Specify planned courses for each semester (Fall 2025, Spring 2026, ...)
-user_semester_courses = [
+# Specify planned courses by semester as a list of lists of dicts: [{course_code: category}, ...]
+planned_courses_by_semester = [
     # Fall 2025
-    ["CHEM 1601", "CHEM 1601L", "MATH 1300", "ES 1401", "ES 1402", "ES 1403", "ECON 1010", "ENGL 1230W"],
+    [
+        {"PHYS 1601": "Science"},
+        {"PHYS 1601L": "Science"},
+        {"MATH 1300": "Mathematics - Calculus/Linear Algebra"},
+        {"ES 1401": "Introduction to Engineering"},
+        {"ES 1402": "Introduction to Engineering"},
+        {"ES 1403": "Introduction to Engineering"},
+        {"ECON 1010": "Liberal Arts Core"},
+        {"ENGL 1230W": "Liberal Arts Core"}
+    ],
     # Spring 2026
-    ["PHYS 1601", "PHYS 1601L", "MATH 1301", "CS 1101", "ECON 1020"],
+    [
+        {"PHYS 1602": "Science"},
+        {"PHYS 1602L": "Science"},
+        {"MATH 1301": "Mathematics - Calculus/Linear Algebra"},
+        {"CS 1101": "Computer Science Core"},
+        {"ECON 1020": "Liberal Arts Core"}
+    ],
     # Fall 2026
-    ["PHYS 1602", "PHYS 1602L", "CS 2201", "CS 2212"],
+    [
+        {"CHEM 1601": "Science"},
+        {"CHEM 1601L": "Science"},
+        {"CS 2201": "Computer Science Core"},
+        {"CS 2212": "Computer Science Core"},
+        {"ECON 3012": "Liberal Arts Core"}
+    ],
+    # Spring 2027
+    [],
+    # Fall 2027
+    [],
+    # Spring 2028
+    [],
+    # Fall 2028
+    [],
+    # Spring 2029
+    [],
 ]
 
-# === Recommendation Logic ===
-def recommend_courses_for_semester(plan_config: PlanConfig, plan: Plan, semester: Semester, catalog: Catalog, dependency_graph: DependencyGraph, user_category_assignments=None) -> Dict[str, List[Union[Course, List[Course]]]]:
-    if user_category_assignments is None:
-        user_category_assignments = {}
+# === Main Logic ===
+def recommend_courses_for_semester(plan_config: PlanConfig, plan: Plan, semester: Semester, catalog: Catalog, dependency_graph: DependencyGraph) -> Dict[str, List[Union[Course, List[Course]]]]:
     completed_codes = {c.course_code for c in plan_config.completed_courses if hasattr(c, 'course_code') and not isinstance(c, list) and c.course_code}
     planned_codes = set()
+
     for sem in plan.semesters:
         for c in getattr(sem, 'planned_courses', []):
-            if hasattr(c, 'course_code') and not isinstance(c, list):
+            if hasattr(c, 'course_code') and c.course_code:
                 planned_codes.add(c.course_code)
+
     all_taken_codes = completed_codes | planned_codes
-    eligible_by_category = {}
     assignment_manager = CategoryAssignmentManager()
-    # --- Assign completed/planned courses to categories (user override if present) ---
-    for program in plan_config.programs:
-        for cat in program.categories:
-            for req in cat.requirements:
-                from models.requirements.requirement_types.compound import CompoundRequirement
-                if isinstance(req, CompoundRequirement):
-                    possible = req.get_possible_courses(catalog.courses, [c for c in catalog.courses if c.course_code in all_taken_codes])
-                else:
-                    possible = req.get_possible_courses(catalog.courses)
-                for possible_course in possible:
-                    if isinstance(possible_course, list):
-                        continue
-                    code = possible_course.course_code
-                    if code in all_taken_codes:
-                        # Use user assignment if present, else default
-                        category = user_category_assignments.get(code, cat.category)
-                        if code is not None and not assignment_manager.is_assigned(code):
-                            assignment_manager.assign(code, category)
+
+    # Assign completed courses to categories (first eligible by default)
+    program = plan_config.programs[0]
+    for cat in program.categories:
+        for possible_course in plan_config.completed_courses:
+            if hasattr(possible_course, 'course_code') and possible_course.course_code in all_taken_codes:
+                if possible_course.course_code is not None and not assignment_manager.is_assigned(possible_course.course_code):
+                    assignment_manager.assign(possible_course.course_code, cat.category)
+
+    # Assign planned courses to categories using user assignments from planned_courses_by_semester
+    for sem_idx, sem in enumerate(plan.semesters):
+        if sem_idx < len(planned_courses_by_semester):
+            for course_dict in planned_courses_by_semester[sem_idx]:
+                for course_code, category in course_dict.items():
+                    if course_code and not assignment_manager.is_assigned(course_code):
+                        assignment_manager.assign(course_code, category)
+
     # --- Build eligible_by_category, excluding already assigned courses ---
+    eligible_by_category = {}
     for program in plan_config.programs:
         progress = program.progress([c for c in catalog.courses if c.course_code in all_taken_codes])
         for cat, cat_progress in zip(program.categories, progress.get('categories', [])):
@@ -201,50 +224,46 @@ def recommend_courses_for_semester(plan_config: PlanConfig, plan: Plan, semester
             del eligible_by_category[category]
     return eligible_by_category
 
-# === Main Script ===
+# === Build Plan and Run Recommendation ===
 if __name__ == "__main__":
-    # --- Load data ---
     with open(os.path.join("data", "courses", "parsed.json"), "r") as f:
         courses_data = json.load(f)
         catalog = Catalog(courses_data)
+
     with open(os.path.join("data", "programs", "majors.json"), "r") as f:
         majors_data = json.load(f)
         first_major_data = majors_data[0]
         from models.requirements.program_builder import ProgramBuilder
         program = ProgramBuilder.build_program(first_major_data)
+
     start_year = 2025
     start_season = 'Fall'
     num_years = 4
     seasons = ['Fall', 'Spring']
     semesters = []
-    completed_codes = set()
-    for i in range(num_years * 2):
+    for i, semester_courses in enumerate(planned_courses_by_semester):
         season = seasons[i % 2]
         year = start_year + (i // 2)
-        planned_codes = user_semester_courses[i] if i < len(user_semester_courses) else []
-        planned_courses = [c for c in catalog.courses if hasattr(c, 'course_code') and c.course_code in planned_codes]
+        planned_courses = []
+        for course_dict in semester_courses:
+            for course_code in course_dict:
+                course = catalog.get_by_course_code(course_code)
+                if course:
+                    planned_courses.append(course)
         semesters.append(Semester(season, year, planned_courses))
-        completed_codes.update(planned_codes)
-    # Find the first semester with no courses input (or the first semester if none input)
-    next_semester_index = 0
-    for i, codes in enumerate(user_semester_courses):
-        if not codes:
-            next_semester_index = i
-            break
-    else:
-        next_semester_index = len(user_semester_courses)
-        if next_semester_index >= len(semesters):
-            print("All semesters are filled. No recommendations to make.")
-            sys.exit(0)
+
     plan = Plan(semesters)
-    completed_courses = [c for c in catalog.courses if hasattr(c, 'course_code') and c.course_code in completed_codes]
-    plan_config = PlanConfig([program], completed_courses, start_season=start_season, start_year=start_year, num_years=num_years)
+    completed_courses = []  # You can add completed courses here if needed
+    plan_config = PlanConfig([program], completed_courses, start_season, start_year, num_years)
+
+    # Find the first empty semester (or recommend for the first semester if all are empty)
+    target_semester_idx = next((i for i, sem in enumerate(plan.semesters) if not sem.planned_courses), 0)
+    target_semester = plan.semesters[target_semester_idx]
+
     graph = DependencyGraph(catalog)
-    target_semester = semesters[next_semester_index]
-    eligible_by_category = recommend_courses_for_semester(plan_config, plan, target_semester, catalog, graph, user_category_assignments)
-    print(f"Eligible courses for {target_semester.season} {target_semester.year} by category:")
-    if not eligible_by_category:
-        print("No eligible courses found.")
+    eligible_by_category = recommend_courses_for_semester(plan_config, plan, target_semester, catalog, graph)
+
+    print(f"\nRecommendations for semester {target_semester_idx + 1}:")
     for category, courses in eligible_by_category.items():
         print(f"\n{category}:")
         for item in courses:
@@ -255,11 +274,4 @@ if __name__ == "__main__":
                 continue
             if not hasattr(item, 'course_code') or not item.course_code:
                 continue
-            is_lab = item.course_code.endswith('L')
-            coreq_list = getattr(item, 'corequisites', []) or []
-            coreqs_in_recs = [c for c in courses if not isinstance(c, list) and hasattr(c, 'course_code') and c.course_code in coreq_list]
-            if is_lab and coreqs_in_recs:
-                coreq_str = ', '.join(f'{c.course_code}' for c in coreqs_in_recs)
-                print(f"  - {item.course_code}: {item.title} (Must be taken with {coreq_str})")
-            else:
-                print(f"  - {item.course_code}: {item.title}") 
+            print(f"  - {item.course_code}: {item.title}") 

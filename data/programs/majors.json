@@ -49,6 +49,7 @@
                 "category": "Liberal Arts Core",
                 "min_credits": 18,
                 "requirements": [
+                    {"type": "course_list", "courses": ["CS 1151"]},
                     {"type": "course_filter", "tags": ["HCA"], "min_credits": 3},
                     {"type": "course_filter", "tags": ["SBS"], "min_credits": 3},
                     {"type": "course_filter", "tags": ["HCA", "SBS", "US", "INT", "P"], "min_credits": 12}
@@ -133,13 +134,6 @@
             {
                 "category": "Open Electives",
                 "min_credits": 18
-            },
-            {
-                "category": "Computers and Ethics",
-                "min_credits": 3,
-                "requirements": [
-                    {"type": "course_list", "courses": ["CS 1151"]}
-                ]
             }
         ]
     }
