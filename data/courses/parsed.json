@@ -6438,7 +6438,11 @@
         "title": "Biology Today Laboratory",
         "description": "Laboratory investigations of the genetics, physiology, and ecology of plants and animals. One three-hour laboratory per week to accompany 1100 or 1509. Not open to students who have earned credit for BSCI 1510L, 1511L, or 1512L without permission. Total credit for this course and BSCI 1510L or 1511L will not exceed 1 credit hours; total credit for this course and BSCI 1512L will not exceed 2 credit hours. Credit hours reduced from second course taken (or from test or transfer credit) as appropriate. Satisfies the AXLE lab course requirement when completed with 1100 or 1509. Co- or pre-requisite: 1100 or 1509. [1] (No AXLE credit)",
         "prereqs": null,
-        "coreqs": null,
+        "coreqs": [
+            [
+                "BSCI 1100"
+            ]
+        ],
         "axle": null,
         "credits": "1"
     },
@@ -15238,7 +15242,14 @@
         "level": 2000,
         "title": "Discrete Structures",
         "description": "Survey of the mathematical tools necessary for an understanding of computer science. Sets, relations, functions, basic counting techniques, permutations, combinations, graphs, recurrence relations, simple analysis of algorithms, O-notation, Boolean algebra, propositional calculus, and numeric representation. Prerequisite: A course in computer science or two semesters of calculus. FALL, SPRING. [3]",
-        "prereqs": null,
+        "prereqs": [
+            [
+                "CS 1100",
+                "CS 1101",
+                "CS 1103",
+                "CS 1104"
+            ]
+        ],
         "coreqs": null,
         "axle": null,
         "credits": "3"
@@ -15451,7 +15462,9 @@
         "description": "Conceptual and practical aspects of designing, implementing, and debugging concurrent software programs using object-oriented programming language features and frameworks. Systematic reuse of scalable and robust software patterns and architectures for concurrent programs. Prerequisite: CS 1101, CS 3251. SPRING. [3]",
         "prereqs": [
             [
-                "CS 1101",
+                "CS 1101"
+            ],
+            [
                 "CS 3251"
             ]
         ],
@@ -15501,12 +15514,8 @@
         "description": "2D rendering and image-based techniques, 2D and 3D transformations, modeling, 3D rendering, graphics pipeline, ray-tracing, and texture-mapping. Prerequisite: MATH 2400, 2410, 2501 or 2600; CS 3251. SPRING. [3]",
         "prereqs": [
             [
-                "MATH 2400"
-            ],
-            [
-                "MATH 2410"
-            ],
-            [
+                "MATH 2400",
+                "MATH 2410",
                 "MATH 2501",
                 "MATH 2600"
             ],
@@ -15528,12 +15537,8 @@
         "description": "Principles and techniques of computer animation. Topics include storyboarding, camera control, skeletons, inverse kinematics, splines, keyframing, motion capture, dynamic simulation, particle systems, facial animation, and motion perception. Students work in groups on the design, modeling, animation, and rendering of a computer animation project. Prerequisite: MATH 2400, 2410, 2501, or 2600; CS 2201. FALL. [3]",
         "prereqs": [
             [
-                "MATH 2400"
-            ],
-            [
-                "MATH 2410"
-            ],
-            [
+                "MATH 2400",
+                "MATH 2410",
                 "MATH 2501",
                 "MATH 2600"
             ],
@@ -15668,7 +15673,9 @@
             [
                 "CS 2231",
                 "CS 2123",
-                "CS 2281"
+                "ECE 2123",
+                "CS 2281",
+                "ECE 2281"
             ]
         ],
         "coreqs": null,
@@ -15824,7 +15831,9 @@
         "description": "Visualization analysis and design. Perception, color and multiple-view design, interaction, and task analysis for visualization. Techniques for visualizing geographic data, networks, hierarchical and high-dimensional data, and uncertainty. Prerequisites: CS 3250, 3251; MATH 2410 or 2501 or 2600; MATH 2810 or 2820. [3]",
         "prereqs": [
             [
-                "CS 3250",
+                "CS 3250"
+            ],
+            [
                 "CS 3251"
             ],
             [
@@ -15938,7 +15947,9 @@
         "description": "Models, algorithms, mathematical tools, and machine learning concepts used in deep learning. Modern practical deep feedforward, convolutional, and recurrent networks. Regularization for deep learning and optimization. Practical design methods. Prerequisite: CS 3250, CS 3251; MATH 2410 or 2600; MATH 2810 or 2820. SPRING. [3]",
         "prereqs": [
             [
-                "CS 3250",
+                "CS 3250"
+            ],
+            [
                 "CS 3251"
             ],
             [
@@ -16098,7 +16109,11 @@
         "level": 4000,
         "title": "Principles of Cloud Computing",
         "description": "Fundamental concepts of cloud computing, different service models, techniques for resource virtualization, programming models, management, mobile cloud computing, recent advances, and hands-on experimentation. Prereq: CS 3281. [3]",
-        "prereqs": null,
+        "prereqs": [
+            [
+                "CS 3281"
+            ]
+        ],
         "coreqs": null,
         "axle": null,
         "credits": "3"
@@ -16147,7 +16162,9 @@
         "description": "Explores recent research on the analysis of social networks and on models and algorithms to abstract their properties and make predictions. Random graph models, network centrality measurements, computational methods of link prediction/recommender systems, clustering and classification on graphs, and network diffusion. Deep learning on graphs including network embedding and graph neural network models and applications. Prerequisites: CS 3250, CS 3251. [3]",
         "prereqs": [
             [
-                "CS 3250",
+                "CS 3250"
+            ],
+            [
                 "CS 3251"
             ]
         ],
@@ -40855,22 +40872,18 @@
             [
                 "MATH 2501",
                 [
-                    "MATH 2300"
-                ],
-                [
-                  "MATH 2310"
-                ],
-                [
-                  "MATH 2410",
-                  "MATH 2600"
+                    [
+                    "MATH 2300",
+                    "MATH 2310"
+                    ],
+                    [
+                    "MATH 2410",
+                    "MATH 2600"
+                    ]
                 ]
             ]
         ],
-        "coreqs": [
-            [
-                "MATH 2501"
-            ]
-        ],
+        "coreqs": null,
         "axle": [
             "MNS"
         ],
@@ -40965,11 +40978,17 @@
         "prereqs": [
             [
                 "MATH 2501",
-                "MATH 2300",
-                "MATH 2310",
-                "MATH 2410",
-                "MATH 2600"
-            ]
+                [
+                  [
+                    "MATH 2300",
+                    "MATH 2310"
+                  ],
+                  [
+                    "MATH 2410",
+                    "MATH 2600"
+                  ]
+                ]
+              ]
         ],
         "coreqs": null,
         "axle": [
@@ -41010,14 +41029,16 @@
             [
                 "MATH 2501",
                 [
-                    [
-                        "MATH 2300", "MATH 2310"
-                    ], 
-                    [
-                        "MATH 2410", "MATH 2600"
-                    ]
+                  [
+                    "MATH 2300",
+                    "MATH 2310"
+                  ],
+                  [
+                    "MATH 2410",
+                    "MATH 2600"
+                  ]
                 ]
-            ]
+              ]
         ],
         "coreqs": null,
         "axle": [
@@ -41084,14 +41105,16 @@
             [
                 "MATH 2501",
                 [
-                    [
-                        "MATH 2300", "MATH 2310"
-                    ], 
-                    [
-                        "MATH 2410", "MATH 2600"
-                    ]
+                  [
+                    "MATH 2300",
+                    "MATH 2310"
+                  ],
+                  [
+                    "MATH 2410",
+                    "MATH 2600"
+                  ]
                 ]
-            ]
+              ]
         ],
         "coreqs": null,
         "axle": [
@@ -41157,7 +41180,8 @@
                         "MATH 2300"
                     ], 
                     [
-                        "MATH 2410", "MATH 2600"
+                        "MATH 2410", 
+                        "MATH 2600"
                     ]
                 ]
             ]
@@ -41553,17 +41577,19 @@
         "title": "Selected Topics for Undergraduates",
         "description": "Topics vary. May be repeated for a total of 12 credits in 3890 and 3895 combined if there is no duplication in topic. Students may enroll in more than one section of this course each semester. Prerequisite: 2501; or both 2300 (or 2310) with either 2410 or 2600. [1-3; maximum of 12 credits total for all semesters of MATH 3890 and 3895 combined] (No AXLE credit)",
         "prereqs": [
-            "MATH 2501",
             [
+                "MATH 2501",
                 [
+                  [
                     "MATH 2300",
                     "MATH 2310"
-                ],
-                [
+                  ],
+                  [
                     "MATH 2410",
                     "MATH 2600"
+                  ]
                 ]
-            ]
+              ]
         ],
         "coreqs": null,
         "axle": null,
@@ -41682,17 +41708,19 @@
         "title": "Set Theory",
         "description": "The basic operations on sets. Cardinal and ordinal numbers. The axiom of choice. Zorn's lemma, and the well-ordering principle. Introduction to the topology of metric spaces, including the concepts of continuity, compactness, connectivity, completeness, and separability. Product spaces. Applications to Euclidean spaces. Strongly recommended for beginning graduate students and for undergraduates who plan to do graduate work in mathematics. Prerequisite: 2501; or both 2300 (or 2310) with either 2410 or 2600. [3] (MNS)",
         "prereqs": [
-            "MATH 2501",
             [
+                "MATH 2501",
                 [
+                  [
                     "MATH 2300",
                     "MATH 2310"
-                ],
-                [
+                  ],
+                  [
                     "MATH 2410",
                     "MATH 2600"
+                  ]
                 ]
-            ]
+              ]
         ],
         "coreqs": null,
         "axle": [
@@ -41794,17 +41822,19 @@
         "title": "Nonlinear Optimization",
         "description": "Mathematical modeling of optimization problems. Theory of unconstrained and constrained optimization, including convexity and the Karush-Kuhn-Tucker conditions. Derivative- and non-derivative-based methods. Familiarity with computer programming is expected. Prerequisite: 2501; or both 2300 (or 2310) and either 2410 or 2600. [3] (MNS)",
         "prereqs": [
-            "MATH 2501",
             [
+                "MATH 2501",
                 [
+                  [
                     "MATH 2300",
                     "MATH 2310"
-                ],
-                [
+                  ],
+                  [
                     "MATH 2410",
                     "MATH 2600"
+                  ]
                 ]
-            ]
+              ]
         ],
         "coreqs": null,
         "axle": [
@@ -41890,7 +41920,16 @@
         "level": 4000,
         "title": "Graph Theory",
         "description": "The mathematical theory of networks. Traversing graphs using paths, cycles, and trails. Matchings and other graph factors. Coloring of vertices and edges. Connectivity and its relation to paths and flows. Embeddings of graphs in surfaces, especially the plane. Prerequisite: linear algebra. Students unfamiliar with basic ideas of graph theory, including paths, cycles, and trees, should take 3700 prior to 4710. [3] (MNS)",
-        "prereqs": null,
+        "prereqs": [
+            [
+                "MATH 2310",
+                "MATH 2400",
+                "MATH 2410",
+                "MATH 2500",
+                "MATH 2501",
+                "MATH 2600"
+            ]
+        ],
         "coreqs": null,
         "axle": [
             "MNS"

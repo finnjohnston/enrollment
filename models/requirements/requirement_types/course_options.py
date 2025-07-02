@@ -15,11 +15,11 @@ class CourseOptionsRequirement(Requirement):
     
     def satisfied_credits(self, completed_courses):
         matching = [
-            course.get_credit_hours()
+            (course, course.get_credit_hours())
             for course in completed_courses
             if course.get_course_code() in self.options
         ]
-        return sum(matching[:self.min_required])
+        return sum(ch for c, ch in matching)
 
     def get_possible_courses(self, courses):
         filtered = [course for course in courses if course.get_course_code() in self.options]
