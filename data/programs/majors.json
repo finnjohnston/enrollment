@@ -22,35 +22,6 @@
                 "category": "Technical Electives",
                 "min_credits": 6,
                 "requirements": [
-                    {
-                        "type": "compound",
-                        "options": [
-                            {"type": "course_filter", "subject": "BME", "min_level": 2000, "min_credits": 0},
-                            {"type": "course_filter", "subject": "CHBE", "min_level": 2000, "min_credits": 0},
-                            {"type": "course_filter", "subject": "CE", "min_level": 2000, "min_credits": 0},
-                            {"type": "course_filter", "subject": "ECE", "min_level": 2000, "min_credits": 0},
-                            {"type": "course_filter", "subject": "ENGM", "min_level": 2000, "min_credits": 0},
-                            {"type": "course_filter", "subject": "ES", "min_level": 2000, "min_credits": 0},
-                            {"type": "course_filter", "subject": "ENVE", "min_level": 2000, "min_credits": 0},
-                            {"type": "course_filter", "subject": "CS", "min_level": 3000, "min_credits": 0},
-                            {"type": "course_filter", "tags": ["MNS"], "min_level": 2000, "min_credits": 0}
-                        ]
-                    }
-                ],
-                "restrictions": {
-                    "type": "group",
-                    "restrictions": [
-                        {"type": "exclusion", "excluded_course_codes": [
-                            "ENGM 2440", "ENGM 4800", "ES 2700", "ES 3884"
-                        ]},
-                        {"type": "exclusion", "excluded_numbers": [2860]}
-                    ]
-                }
-            },
-            {
-                "category": "Mathematics - Calculus/Linear Algebra",
-                "min_credits": 14,
-                "requirements": [
                     {"type": "course_options", "options": [
                         "ANTH 3261", "ANTH 3344", "ANTH 3346", "ANTH 3372", "ANTH 3401W", "ANTH 3866", "ANTH 3867", "ANTH 3868", "ANTH 4345", "ANTH 4373", 
                         "ASTR 2110", "ASTR 2150", "ASTR 2190", "ASTR 3000", "ASTR 3300", "ASTR 3600", "ASTR 3700", "ASTR 3800", "ASTR 3900", "ASTR 3970", 
@@ -101,6 +72,29 @@
                          "PHYS 4005", "PHYS 4020", "PSY 2100", "PSY 2230", "PSY 3270", "PSY 3700", "PSY 3755", "PSY 3760", "PSY 3775", "PSY 3780", "PSY 4218",
                         "PSY 4219", "PSY 4220", "PSY 4720", "PSY 4730", "PSY 4775"
                     ]
+                    }
+                ],
+                "restrictions": {
+                    "type": "group",
+                    "restrictions": [
+                        {"type": "exclusion", "excluded_course_codes": [
+                            "ENGM 2440", "ENGM 4800", "ES 2700", "ES 3884"
+                        ]},
+                        {"type": "exclusion", "excluded_numbers": [2860]}
+                    ]
+                }
+            },
+            {
+                "category": "Mathematics - Calculus/Linear Algebra",
+                "min_credits": 14,
+                "requirements": [
+                    {
+                        "type": "compound",
+                        "options": [
+                            {"type": "course_list", "courses": ["MATH 1300", "MATH 1301", "MATH 2300", "MATH 2410"]},
+                            {"type": "course_list", "courses": ["MATH 1300", "MATH 1301", "MATH 2300", "MATH 2600"]},
+                            {"type": "course_list", "courses": ["MATH 1300", "MATH 1301", "MATH 2500", "MATH 2501"]}
+                        ]
                     }
                 ]
             },
