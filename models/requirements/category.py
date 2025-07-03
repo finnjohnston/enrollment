@@ -17,9 +17,15 @@ class RequirementCategory:
 
     def progress(self, completed_courses: List[Course]) -> dict:
         earned = 0
+        used_courses = set()
         for req in self.requirements:
             try:
-                earned += req.satisfied_credits(completed_courses)
+                matching = req.get_completed_courses(completed_courses)
+                for course in matching:
+                    code = course.get_course_code()
+                    if code not in used_courses:
+                        earned += course.get_credit_hours()
+                        used_courses.add(code)
             except Exception as e:
                 print(f"Warning: Error calculating satisfied credits for requirement {req}: {e}")
                 continue
