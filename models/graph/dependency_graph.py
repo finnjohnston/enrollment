@@ -337,3 +337,32 @@ class DependencyGraph:
     def get_node_count(self) -> int:
         """Get total number of nodes in the graph."""
         return len(self.nodes)
+
+    def find_coreq_group(self, course_code: str, completed_courses: Set[str], processed: Set[str]) -> Set[str]:
+        """
+        Return the set of all mutually required corequisite courses (including itself),
+        excluding completed and processed courses. Traverse through completed courses to find all mutually-locked courses.
+        """
+        group = set()
+        visited = set()
+        stack = [course_code]
+        while stack:
+            curr = stack.pop()
+            if curr in visited:
+                continue
+            visited.add(curr)
+            add_to_group = curr not in completed_courses and curr not in processed
+            if add_to_group:
+                group.add(curr)
+            coreq_logic = self.coreq_logic.get(curr)
+            if not coreq_logic:
+                continue
+            for coreq in coreq_logic.get_all_courses():
+                other_coreq_logic = self.coreq_logic.get(coreq)
+                if (
+                    other_coreq_logic and
+                    curr in other_coreq_logic.get_all_courses()
+                ):
+                    if coreq not in visited:
+                        stack.append(coreq)
+        return group
