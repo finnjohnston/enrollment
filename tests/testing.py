@@ -14,6 +14,7 @@ from models.planning.plan import Plan
 from models.courses.course import Course
 from models.planning.recommendation import get_unmet_requirements
 from models.planning.recommendation.get_unmet_requirements import get_unmet_requirements
+from models.planning.recommendation.build_recommendation_sets import build_recommendation_sets
 
 
 with open("data/courses/parsed.json", 'r') as f:
@@ -27,9 +28,8 @@ with open("data/programs/majors.json", 'r') as f:
     cs_major = ProgramBuilder.build_program(cs_major_data)
 
 unmet = get_unmet_requirements([cs_major], [])
-for (program, category), reqs in unmet.items():
-    print(f"Program: {program}, Category: {category}, #Unmet: {len(reqs)}")
-    for req in reqs:
-        print(f"  - {req.describe()}")
+recs = build_recommendation_sets(unmet, catalog)
+print(recs)
+
 
 

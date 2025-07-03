@@ -27,7 +27,7 @@
                         "ANTH 3261", "ANTH 3344", "ANTH 3346", "ANTH 3372", "ANTH 3401W", "ANTH 3866", "ANTH 3867", "ANTH 3868", "ANTH 4345", "ANTH 4373", 
                         "ASTR 2110", "ASTR 2150", "ASTR 2190", "ASTR 3000", "ASTR 3300", "ASTR 3600", "ASTR 3700", "ASTR 3800", "ASTR 3900", "ASTR 3970", 
                         "ASTR 3980", "BCB 2200", "BCB 3101", "BCB 4320", "BCB 4965", "BCB 4966", "BME 2100", "BME 2110", "BME 2210", "BME 2301", "BME 2302", 
-                        "BME 2400", "BME 2860", "BME 2900W", "BME 3000", "BME 3301", "BME 3302", "BME 3400", "BME 3500", "BME 3700", "BME 3750", "BME 3800", 
+                        "BME 2400", "BME 2900W", "BME 3000", "BME 3301", "BME 3302", "BME 3400", "BME 3500", "BME 3700", "BME 3750", "BME 3800", 
                         "BME 3860", "BME 3861", "BME 3890", "BME 3891", "BME 3892", "BME 3893", "BME 3900W", "BME 4030", "BME 4100", "BME 4200", "BME 4250", 
                         "BME 4320", "BME 4340", "BME 4400", "BME 4420", "BME 4430", "BME 4460", "BME 4500", "BME 4530", "BME 4550", "BME 4901W", "BME 4950", 
                         "BME 4951", "BME 4959", "BSCI 2101", "BSCI 2105", "BSCI 2119", "BSCI 2150", "BSCI 2201", "BSCI 2210", "BSCI 2218", "BSCI 2238", 
@@ -38,7 +38,7 @@
                         "CE 3200", "CE 3205", "CE 3250", "CE 3300", "CE 3501", "CE 3700", "CE 3700L", "CE 3705", "CE 3841", "CE 3842", "CE 3843", "CE 3890",
                          "CE 4100", "CE 4150", "CE 4200", "CE 4205", "CE 4210", "CE 4211", "CE 4240", "CE 4250", "CE 4300", "CE 4320", "CE 4340", "CE 4400", 
                          "CE 4401", "CE 4405", "CE 4410", "CE 4415", "CE 4420", "CE 4425", "CE 4430", "CE 4500", "CE 4505", "CE 4510", "CE 4950", "CE 4951", 
-                         "CE 4959", "CHBE 2100", "CHBE 2150", "CHBE 2200", "CHBE 2250", "CHBE 2860", "CHBE 2900W", "CHBE 3200", "CHBE 3250", "CHBE 3300", 
+                         "CE 4959", "CHBE 2100", "CHBE 2150", "CHBE 2200", "CHBE 2250", "CHBE 2900W", "CHBE 3200", "CHBE 3250", "CHBE 3300", 
                          "CHBE 3350", "CHBE 3600", "CHBE 3860", "CHBE 3861", "CHBE 3890", "CHBE 3900W", "CHBE 4200", "CHBE 4500", "CHBE 4800", "CHBE 4805", 
                          "CHBE 4810", "CHBE 4820", "CHBE 4825", "CHBE 4830", "CHBE 4840", "CHBE 4850", "CHBE 4860", "CHBE 4870", "CHBE 4875", "CHBE 4880", 
                          "CHBE 4900W", "CHBE 4950W", "CHBE 4951W", "CHBE 4959", "CHEM 2100", "CHEM 2211", "CHEM 2212", "CHEM 2221", "CHEM 2222", "CHEM 2610", 
@@ -49,19 +49,19 @@
                          "CS 4262", "CS 4266", "CS 4267", "CS 4269", "CS 4275", "CS 4277", "CS 4278", "CS 4279", "CS 4284", "CS 4285", "CS 4286", "CS 4287", 
                          "CS 4288", "CS 4289", "CS 4352", "CS 4359", "CS 4375", "CS 4375L", "CS 4376", "CS 4383", "CS 4959", "CSET 2110", "CSET 2500", 
                          "CSET 2550", "CSET 3241W", "CSET 3257", "ECE 2112", "ECE 2112L", "ECE 2123", "ECE 2123L", "ECE 2213", "ECE 2213L", "ECE 2214", 
-                         "ECE 2218", "ECE 2218L", "ECE 2281", "ECE 2281L", "ECE 2860", "ECE 3214", "ECE 3233", "ECE 3235", "ECE 3235L", "ECE 3860", 
+                         "ECE 2218", "ECE 2218L", "ECE 2281", "ECE 2281L", "ECE 3214", "ECE 3233", "ECE 3235", "ECE 3235L", "ECE 3860", 
                          "ECE 3861", "ECE 3891", "ECE 3892", "ECE 4239", "ECE 4252", "ECE 4257", "ECE 4267", "ECE 4268", "ECE 4275", "ECE 4283", 
                          "ECE 4284", "ECE 4286", "ECE 4287", "ECE 4288", "ECE 4289", "ECE 4334", "ECE 4335", "ECE 4353", "ECE 4354", "ECE 4356", 
                          "ECE 4358", "ECE 4363", "ECE 4370", "ECE 4371", "ECE 4375", "ECE 4375L", "ECE 4377", "ECE 4380", "ECE 4383", "ECE 4385", 
                          "ECE 4950", "ECE 4951", "ECE 4959", "EES 2110", "EES 2510", "EES 2550", "EES 2580", "EES 3220", "EES 3260", "EES 3280", 
                          "EES 3310", "EES 3330", "EES 3340", "EES 3865", "EES 3875", "EES 4231", "EES 4233", "EES 4238", "EES 4300", "EES 4420", 
                          "EES 4440", "EES 4480", "EES 4550", "EES 4600", "EES 4650", "EES 4680", "EES 4760", "EES 4820", "EES 4830", "ENGM 2160", 
-                         "ENGM 2210", "ENGM 2440", "ENGM 3000", "ENGM 3010", "ENGM 3100", "ENGM 3200", "ENGM 3300", "ENGM 3350", "ENGM 3600", 
-                         "ENGM 3650", "ENGM 3700", "ENGM 3850", "ENGM 3851", "ENGM 3890", "ENGM 3891", "ENGM 4500", "ENGM 4800", "ENGM 4951", 
+                         "ENGM 2210", "ENGM 3000", "ENGM 3010", "ENGM 3100", "ENGM 3200", "ENGM 3300", "ENGM 3350", "ENGM 3600", 
+                         "ENGM 3650", "ENGM 3700", "ENGM 3850", "ENGM 3851", "ENGM 3890", "ENGM 3891", "ENGM 4500", "ENGM 4951", 
                          "ENVE 3200", "ENVE 3200L", "ENVE 3600", "ENVE 3610", "ENVE 4305", "ENVE 4600", "ENVE 4605", "ENVE 4610", "ENVE 4615", 
                          "ENVE 4620", "ENVE 4625", "ENVE 4700", "ENVE 4705", "ENVE 4710", "ENVE 4715", "ENVE 4720", "ENVE 4800", "ENVE 4950", 
-                         "ENVE 4951", "ENVE 4959", "ES 2100W", "ES 2700", "ES 2900", "ES 3230", "ES 3231", "ES 3232", "ES 3233", "ES 3300", "ES 3860", 
-                         "ES 3884", "ES 3890", "ES 4950", "ES 4951", "ES 4959", "MATH 2300", "MATH 2310", "MATH 2410", "MATH 2420", "MATH 2500", 
+                         "ENVE 4951", "ENVE 4959", "ES 2100W", "ES 2900", "ES 3230", "ES 3231", "ES 3232", "ES 3233", "ES 3300", "ES 3860", 
+                         "ES 3890", "ES 4950", "ES 4951", "ES 4959", "MATH 2300", "MATH 2310", "MATH 2410", "MATH 2420", "MATH 2500", 
                          "MATH 2501", "MATH 2600", "MATH 2610", "MATH 2820", "MATH 2821", "MATH 3000", "MATH 3010", "MATH 3100", "MATH 3110", "MATH 3120", 
                          "MATH 3130", "MATH 3200", "MATH 3210", "MATH 3230", "MATH 3300", "MATH 3310", "MATH 3320", "MATH 3330", "MATH 3600", "MATH 3620", 
                          "MATH 3630", "MATH 3640", "MATH 3641", "MATH 3650", "MATH 3651", "MATH 3660", "MATH 3670", "MATH 3700", "MATH 3710", "MATH 3800", 
@@ -73,18 +73,9 @@
                          "PHYS 4005", "PHYS 4020", "PSY 2100", "PSY 2230", "PSY 3270", "PSY 3700", "PSY 3755", "PSY 3760", "PSY 3775", "PSY 3780", "PSY 4218",
                         "PSY 4219", "PSY 4220", "PSY 4720", "PSY 4730", "PSY 4775"
                     ],
-                    "min_credits": 6
+                    "min_required": 2
                     }
-                ],
-                "restrictions": {
-                    "type": "group",
-                    "restrictions": [
-                        {"type": "exclusion", "excluded_course_codes": [
-                            "ENGM 2440", "ENGM 4800", "ES 2700", "ES 3884"
-                        ]},
-                        {"type": "exclusion", "excluded_numbers": [2860]}
-                    ]
-                }
+                ]
             },
             {
                 "category": "Mathematics - Calculus/Linear Algebra",
@@ -106,7 +97,7 @@
                 "requirements": [
                     {"type": "course_options", 
                     "options": ["MATH 2810", "MATH 2820", "MATH 3640"], 
-                    "min_credits": 1}
+                    "min_required": 1}
                 ]
             },
             {
@@ -120,7 +111,7 @@
                         "EES 1510", "EES 1510L", "MSE 1500", "MSE 1500L", "PHYS 1601", "PHYS 1601L",
                         "PHYS 1602", "PHYS 1602L"
                     ],
-                    "min_credits": 12
+                    "min_required": 3
                     }
                 ],
                 "notes": "Must include at least one laboratory course."
@@ -152,13 +143,12 @@
                         "options": [
                             "CS 3252", "CS 3253", "CS 3254", "CS 3255", "CS 3258", "CS 3259", "CS 3265", "CS 3274", "CS 3276", "CS 3282", "CS 3860", "CS 3861", "CS 3862", "CS 3891", "CS 3892", "CS 4239", "CS 4240", "CS 4247", "CS 4249", "CS 4260", "CS 4262", "CS 4266", "CS 4267", "CS 4269", "CS 4275", "CS 4277", "CS 4278", "CS 4279", "CS 4284", "CS 4285", "CS 4286", "CS 4287", "CS 4288", "CS 4289", "CS 4352", "CS 4359", "CS 4375", "CS 4375L", "CS 4376", "CS 4383", "CS 4959", "ECE 4353", "ECE 4354", "ECE 4375", "MATH 3320", "MATH 3620", "MATH 4600", "MATH 4620"
                         ],
-                        "min_credits": 15
+                        "min_required": 5
                     }
                 ],
                 "restrictions": {
                     "type": "group",
                     "restrictions": [
-                        {"type": "exclusion", "excluded_course_codes": ["CS 3262"]},
                         {"type": "course_group", "courses": ["MATH 3320", "MATH 3620", "MATH 4600", "MATH 4620"], "max_credits": 6},
                         {"type": "course_group", "courses": ["CS 3860", "CS 3861"], "max_credits": 6}
                     ]
@@ -172,9 +162,7 @@
                     "options": [
                         "CS 3862", "CS 3892", "CS 4239", "CS 4249", "CS 4269",
                         "CS 4279", "CS 4287", "CS 4289", "CS 4359"
-                    ],
-                    "min_credits": 3
-                    }
+                    ]}
                 ]
             },
             {

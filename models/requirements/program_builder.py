@@ -20,7 +20,7 @@ class ProgramBuilder:
         if t == 'course_list':
             return CourseListRequirement(req_json['courses'], restrictions=restrictions)
         elif t == 'course_options':
-            return CourseOptionsRequirement(req_json['options'], req_json.get('min_credits', 3), restrictions=restrictions)
+            return CourseOptionsRequirement(req_json['options'], req_json.get('min_required', 1), restrictions=restrictions)
         elif t == 'course_filter':
             return CourseFilterRequirement(
                 subject=req_json.get('subject'),

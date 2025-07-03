@@ -2,23 +2,24 @@ from .requirement import Requirement
 
 class CourseOptionsRequirement(Requirement):
     """
-    A list of course options where a student must earn at least min_credits from the options.
+    A list of course options where a student picks one or more.
     """
 
-    def __init__(self, options, min_credits=3, restrictions=None):
+    def __init__(self, options, min_required = 1, restrictions=None):
         super().__init__(restrictions=restrictions)
         self.options = options
-        self.min_credits = min_credits
+        self.min_required = min_required
 
     def describe(self):
-        return f"Take at least {self.min_credits} credits from {', '.join(self.options)}"
+        return f"Choose at least {self.min_required} from {', '.join(self.options)}"
     
     def satisfied_credits(self, completed_courses):
         matching = [
-            course for course in completed_courses
+            (course, course.get_credit_hours())
+            for course in completed_courses
             if course.get_course_code() in self.options
         ]
-        return sum(course.get_credit_hours() for course in matching)
+        return sum(ch for c, ch in matching)
 
     def get_possible_courses(self, courses):
         filtered = [course for course in courses if course.get_course_code() in self.options]
