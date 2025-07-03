@@ -12,6 +12,9 @@ from models.planning.plan_config import PlanConfig
 from models.planning.semester import Semester
 from models.planning.plan import Plan
 from models.courses.course import Course
+from models.planning.recommendation import get_unmet_requirements
+from models.planning.recommendation.get_unmet_requirements import get_unmet_requirements
+
 
 with open("data/courses/parsed.json", 'r') as f:
     courses_data = json.load(f)
@@ -23,6 +26,10 @@ with open("data/programs/majors.json", 'r') as f:
     cs_major_data = majors_data[0]
     cs_major = ProgramBuilder.build_program(cs_major_data)
 
-completed_courses = []
-plan_config = PlanConfig([cs_major], completed_courses, "Fall", 2024, 4)
-plan = Plan([Semester("Fall", 2025), Semester("Spring", 2026)])
+unmet = get_unmet_requirements([cs_major], [])
+for (program, category), reqs in unmet.items():
+    print(f"Program: {program}, Category: {category}, #Unmet: {len(reqs)}")
+    for req in reqs:
+        print(f"  - {req.describe()}")
+
+

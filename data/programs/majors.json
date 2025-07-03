@@ -22,7 +22,8 @@
                 "category": "Technical Electives",
                 "min_credits": 6,
                 "requirements": [
-                    {"type": "course_options", "options": [
+                    {"type": "course_options", 
+                    "options": [
                         "ANTH 3261", "ANTH 3344", "ANTH 3346", "ANTH 3372", "ANTH 3401W", "ANTH 3866", "ANTH 3867", "ANTH 3868", "ANTH 4345", "ANTH 4373", 
                         "ASTR 2110", "ASTR 2150", "ASTR 2190", "ASTR 3000", "ASTR 3300", "ASTR 3600", "ASTR 3700", "ASTR 3800", "ASTR 3900", "ASTR 3970", 
                         "ASTR 3980", "BCB 2200", "BCB 3101", "BCB 4320", "BCB 4965", "BCB 4966", "BME 2100", "BME 2110", "BME 2210", "BME 2301", "BME 2302", 
@@ -71,7 +72,8 @@
                          "PHYS 3122", "PHYS 3125", "PHYS 3200", "PHYS 3640", "PHYS 3645", "PHYS 3651", "PHYS 3652", "PHYS 3660", "PHYS 3790", "PHYS 3820", 
                          "PHYS 4005", "PHYS 4020", "PSY 2100", "PSY 2230", "PSY 3270", "PSY 3700", "PSY 3755", "PSY 3760", "PSY 3775", "PSY 3780", "PSY 4218",
                         "PSY 4219", "PSY 4220", "PSY 4720", "PSY 4730", "PSY 4775"
-                    ]
+                    ],
+                    "min_credits": 6
                     }
                 ],
                 "restrictions": {
@@ -102,19 +104,24 @@
                 "category": "Mathematics - Statistics/Probability",
                 "min_credits": 3,
                 "requirements": [
-                    {"type": "course_options", "options": ["MATH 2810", "MATH 2820", "MATH 3640"], "min_required": 1}
+                    {"type": "course_options", 
+                    "options": ["MATH 2810", "MATH 2820", "MATH 3640"], 
+                    "min_credits": 1}
                 ]
             },
             {
                 "category": "Science",
                 "min_credits": 12,
                 "requirements": [
-                    {"type": "course_options", "options": [
+                    {"type": "course_options", 
+                    "options": [
                         "BSCI 1100", "BSCI 1100L", "BSCI 1510", "BSCI 1510L", "BSCI 1511", "BSCI 1511L",
                         "BSCI 2218", "BSCI 2219", "CHEM 1601", "CHEM 1601L", "CHEM 1602", "CHEM 1602L",
                         "EES 1510", "EES 1510L", "MSE 1500", "MSE 1500L", "PHYS 1601", "PHYS 1601L",
                         "PHYS 1602", "PHYS 1602L"
-                    ]}
+                    ],
+                    "min_credits": 12
+                    }
                 ],
                 "notes": "Must include at least one laboratory course."
             },
@@ -129,7 +136,8 @@
                 "category": "Computer Science Core",
                 "min_credits": 25,
                 "requirements": [
-                    {"type": "course_list", "courses": [
+                    {"type": "course_list", 
+                    "courses": [
                         "CS 1101", "CS 2201", "CS 2212", "CS 3250",
                         "CS 3251", "CS 3270", "CS 3281", "CS 2281", "CS 2281L", "CS 2281L"
                     ]}
@@ -143,7 +151,8 @@
                         "type": "course_options",
                         "options": [
                             "CS 3252", "CS 3253", "CS 3254", "CS 3255", "CS 3258", "CS 3259", "CS 3265", "CS 3274", "CS 3276", "CS 3282", "CS 3860", "CS 3861", "CS 3862", "CS 3891", "CS 3892", "CS 4239", "CS 4240", "CS 4247", "CS 4249", "CS 4260", "CS 4262", "CS 4266", "CS 4267", "CS 4269", "CS 4275", "CS 4277", "CS 4278", "CS 4279", "CS 4284", "CS 4285", "CS 4286", "CS 4287", "CS 4288", "CS 4289", "CS 4352", "CS 4359", "CS 4375", "CS 4375L", "CS 4376", "CS 4383", "CS 4959", "ECE 4353", "ECE 4354", "ECE 4375", "MATH 3320", "MATH 3620", "MATH 4600", "MATH 4620"
-                          ]
+                        ],
+                        "min_credits": 15
                     }
                 ],
                 "restrictions": {
@@ -159,10 +168,13 @@
                 "category": "Computer Science Project",
                 "min_credits": 3,
                 "requirements": [
-                    {"type": "course_options", "options": [
+                    {"type": "course_options", 
+                    "options": [
                         "CS 3862", "CS 3892", "CS 4239", "CS 4249", "CS 4269",
                         "CS 4279", "CS 4287", "CS 4289", "CS 4359"
-                    ]}
+                    ],
+                    "min_credits": 3
+                    }
                 ]
             },
             {
