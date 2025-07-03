@@ -14,12 +14,15 @@ def build_recommendation_sets(unmet_requirements: Dict[Tuple[str, str], List[Req
     recommendation_sets = {}
     for (program_name, category_name), requirement_list in unmet_requirements.items():
         category_courses = set()
-        for req in requirement_list:
-            possible = req.get_possible_courses(all_courses)
-            for course in possible:
-                code = course.get_course_code()
-                if code:
-                    category_courses.add(code)
+        if not requirement_list:
+            category_courses = {c.get_course_code() for c in all_courses}
+        else:
+            for req in requirement_list:
+                possible = req.get_possible_courses(all_courses)
+                for course in possible:
+                    code = course.get_course_code()
+                    if code:
+                        category_courses.add(code)
         if category_name not in recommendation_sets:
             recommendation_sets[category_name] = set()
         recommendation_sets[category_name].update(category_courses)

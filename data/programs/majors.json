@@ -6,7 +6,10 @@
         "categories": [
             {
                 "category": "Open Electives",
-                "min_credits": 18
+                "min_credits": 18,
+                "requirements": [
+                    {"type": "course_filter", "min_credits": 18}
+                ]
             },
             {
                 "category": "Liberal Arts Core",

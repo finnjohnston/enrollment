@@ -29,7 +29,4 @@ with open("data/programs/majors.json", 'r') as f:
 
 unmet = get_unmet_requirements([cs_major], [])
 recs = build_recommendation_sets(unmet, catalog)
-print(recs)
-
-
 
