@@ -1,6 +1,7 @@
 import time
 import json
 import os
+from typing import List, Dict, Any, Optional, Tuple
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -42,7 +43,7 @@ class CourseScraper:
                 return json.load(f)
         return None
 
-    def get_subjects(self, max_retries=3):
+    def get_subjects(self, max_retries: int = 3) -> List[Dict[str, str]]:
         for attempt in range(max_retries):
             try:
                 url = "https://www.vanderbilt.edu/catalogs/kuali/undergraduate-24-25.php#/courses"
@@ -88,6 +89,9 @@ class CourseScraper:
                     time.sleep(5)
                 else:
                     raise e
+        
+        # This should never be reached, but satisfies the type checker
+        return []
 
     def get_course_description(self, course_url, max_retries=3):
         for attempt in range(max_retries):
@@ -261,7 +265,7 @@ class CourseScraper:
                     print(f"Failed to process {subject['title']} after {max_retries} attempts")
                     return []
 
-    def scrape_all(self):
+    def scrape_all(self) -> None:
         progress_data = self.load_progress()
         if progress_data:
             print(f"Resuming from previous session...")
@@ -274,8 +278,10 @@ class CourseScraper:
             processed_subjects = []
             subjects = []
             start_index = 0
+        
         try:
-            if not subjects:
+            # Ensure subjects is a list and not None
+            if subjects is None or not subjects:
                 subjects = self.get_subjects()
                 self.save_progress({
                     'subjects': subjects,
@@ -283,8 +289,11 @@ class CourseScraper:
                     'all_courses': all_courses
                 })
 
-            for i in range(start_index, len(subjects)):
-                subject = subjects[i]
+            # At this point, subjects is guaranteed to be a non-empty list
+            subjects_list = subjects if subjects is not None else []
+
+            for i in range(start_index, len(subjects_list)):
+                subject = subjects_list[i]
                 if subject['title'] in processed_subjects:
                     continue
                 try:
@@ -298,11 +307,11 @@ class CourseScraper:
                         all_courses.extend(subject_courses)
                     processed_subjects.append(subject['title'])
                     self.save_progress({
-                        'subjects': subjects,
+                        'subjects': subjects_list,
                         'processed_subjects': processed_subjects,
                         'all_courses': all_courses
                     })
-                    print(f"Progress: {len(processed_subjects)}/{len(subjects)} subjects completed")
+                    print(f"Progress: {len(processed_subjects)}/{len(subjects_list)} subjects completed")
 
                 except WebDriverException as e:
                     print(f"WebDriver error for {subject['title']}: {e}")
@@ -317,7 +326,7 @@ class CourseScraper:
             total_courses = sum(1 for _ in all_courses)
             print(f"Total individual courses found: {total_courses}")
             self.save_progress({
-                'subjects': subjects,
+                'subjects': subjects_list,
                 'processed_subjects': processed_subjects,
                 'all_courses': all_courses,
                 'completed': True
@@ -332,7 +341,7 @@ class CourseScraper:
         except Exception as e:
             print(f"Fatal error: {e}")
             self.save_progress({
-                'subjects': subjects,
+                'subjects': subjects_list if 'subjects_list' in locals() else [],
                 'processed_subjects': processed_subjects,
                 'all_courses': all_courses,
                 'error': str(e)
