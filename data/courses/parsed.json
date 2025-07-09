@@ -40814,7 +40814,11 @@
         "level": 2000,
         "title": "Multivariable Calculus and Linear Algebra",
         "description": "Vector algebra and geometry; linear transformations and matrix algebra. Real and complex vector spaces, systems of linear equations, inner product spaces. Functions of several variables and vector-valued functions: limits, continuity, the derivative. Extremum and nonlinear problems, manifolds. Multiple integrals, line and surface integrals, differential forms, integration on manifolds, theorems of Green, Gauss, and Stokes. Eigenvectors and eigenvalues. Emphasis on rigorous proofs. Not open to students who have earned credit for MATH 2300, 2310, 2400, 2410, or 2600 without permission. Total credit for this course and MATH 2300 or 2410 will not exceed 5 credit hours; total credit for this course and MATH 2310 or 2400 will not exceed 4 credit hours; total credit for this course and MATH 2600 will not exceed 6 credit hours. Credit hours reduced from second course taken (or from test or transfer credit) as appropriate. Open only to first-year students with a test score of 5 on the Calculus-BC Advanced Placement examination. [4] (MNS)",
-        "prereqs": null,
+        "prereqs": [
+            [
+                "MATH 1301"
+            ]
+        ],
         "coreqs": null,
         "axle": [
             "MNS"

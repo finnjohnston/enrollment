@@ -4,7 +4,7 @@ from models.courses.course import Course
 from models.requirements.requirement_types.requirement import Requirement
 from models.courses.catalog import Catalog
 
-def build_requirement_options(unmet_requirements: Dict[Tuple[str, str], List[Requirement]],catalog: Catalog) -> Dict[str, Set[str]]:
+def get_all_recommendations(unmet_requirements: Dict[Tuple[str, str], List[Requirement]], catalog: Catalog) -> Dict[str, Set[str]]:
     """
     For each unmet requirement in each category, get all potential courses that could satisfy it (not filtered on completion or eligibility),
     and group them by requirement category (category_name).
