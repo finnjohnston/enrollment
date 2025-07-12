@@ -114,7 +114,7 @@
                         "EES 1510", "EES 1510L", "MSE 1500", "MSE 1500L", "PHYS 1601", "PHYS 1601L",
                         "PHYS 1602", "PHYS 1602L"
                     ],
-                    "min_required": 3
+                    "min_required": 5
                     }
                 ],
                 "notes": "Must include at least one laboratory course."

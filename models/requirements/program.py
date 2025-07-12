@@ -1,4 +1,4 @@
-from typing import List, Optional, Literal
+from typing import List, Optional, Literal, Dict
 from .category import RequirementCategory
 from models.courses.course import Course
 
@@ -26,13 +26,13 @@ class Program:
     def is_valid(self) -> bool:
         return self.total_required_credits() <= self.total_credits
     
-    def progress(self, completed_courses: List[Course]) -> dict:
+    def progress(self, completed_courses: List[Course], requirement_assignments: Optional[Dict[str, str]] = None) -> dict:
         category_progress = []
         total_earned = 0
         all_categories_complete = True
 
         for category in self.categories:
-            cat_progress = category.progress(completed_courses)
+            cat_progress = category.progress(completed_courses, requirement_assignments)
             category_progress.append(cat_progress)
             total_earned += cat_progress.get("earned_credits", 0)
             if not cat_progress.get("complete", False):

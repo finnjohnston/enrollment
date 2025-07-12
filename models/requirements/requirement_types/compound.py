@@ -44,6 +44,25 @@ class CompoundRequirement(Requirement):
                 max_credits = max(max_credits, earned_credits)
         return max_credits
 
+    def get_completed_courses(self, completed_courses: List[Course]) -> List[Course]:
+        """Returns the subset of completed_courses that satisfy this requirement."""
+        # For compound requirements, return courses from the option that gives the most credits
+        best_option_courses = []
+        max_credits = 0
+        
+        for opt in self.options:
+            try:
+                option_courses = opt.get_completed_courses(completed_courses)
+                option_credits = sum(course.get_credit_hours() for course in option_courses)
+                if option_credits > max_credits:
+                    max_credits = option_credits
+                    best_option_courses = option_courses
+            except Exception as e:
+                print(f"Warning: Error getting completed courses for compound option {opt}: {e}")
+                continue
+                
+        return best_option_courses
+
     def get_possible_courses(self, courses: List[Course]) -> List[Course]:
         # Return all courses that could satisfy any option in the compound requirement
         all_codes = set()

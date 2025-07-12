@@ -63,6 +63,34 @@ class CourseFilterRequirement(Requirement):
                 continue
         return total
 
+    def get_completed_courses(self, completed_courses: List[Course]) -> List[Course]:
+        """Returns the subset of completed_courses that satisfy this requirement."""
+        matching = []
+        for course in completed_courses:
+            try:
+                if self.subject and course.subject_code != self.subject:
+                    continue
+                if self.tags and not any(tag in course.get_axle_requirements() for tag in self.tags):
+                    continue
+
+                # Handle course number conversion safely
+                if course.course_number is None:
+                    continue
+                try:
+                    course_num = int(course.course_number)
+                except (ValueError, TypeError):
+                    continue
+
+                if self.min_level and course_num < self.min_level:
+                    continue
+                if self.max_level and course_num > self.max_level:
+                    continue
+                matching.append(course)
+            except Exception as e:
+                print(f"Warning: Error processing course {course}: {e}")
+                continue
+        return matching
+
     def get_possible_courses(self, courses: List[Course]) -> List[Course]:
         """
         Returns all matching courses from the provided list, applying self.restrictions if present.

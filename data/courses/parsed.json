@@ -15668,7 +15668,7 @@
         "description": "Resource allocation and control functions of operating systems. Scheduling of processes and processors. Concurrent processes and primitives for their synchronization. Use of parallel processes in designing operating system subsystems. Methods of implementing parallel processes on conventional computers. Virtual memory, paging, protection of shared and non-shared information. Structures of data files in secondary storage. Security issues. Case studies. Prerequisite: CS3251; CS 2231 or CS/ECE 2123 or CS/ECE 2281. FALL, SPRING. [3]",
         "prereqs": [
             [
-                "CS3251"
+                "CS 3251"
             ],
             [
                 "CS 2231",

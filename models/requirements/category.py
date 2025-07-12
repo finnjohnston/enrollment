@@ -1,5 +1,7 @@
-from typing import List, Optional, Sequence
+from typing import List, Optional, Sequence, Dict
 from models.requirements.requirement_types.requirement import Requirement
+from models.requirements.requirement_types.course_filter import CourseFilterRequirement
+from models.requirements.requirement_types.course_options import CourseOptionsRequirement
 from models.requirements.restrictions.group import RestrictionGroup
 from models.courses.course import Course
 
@@ -15,12 +17,28 @@ class RequirementCategory:
         self.restrictions = restrictions
         self.notes = notes
 
-    def progress(self, completed_courses: List[Course]) -> dict:
+    def progress(self, completed_courses: List[Course], requirement_assignments: Optional[Dict[str, str]] = None) -> dict:
         earned = 0
         used_courses = set()
         for req in self.requirements:
             try:
-                matching = req.get_completed_courses(completed_courses)
+                # For CourseFilterRequirement and CourseOptionsRequirement, only count courses assigned to this category
+                if isinstance(req, (CourseFilterRequirement, CourseOptionsRequirement)):
+                    if requirement_assignments:
+                        # Filter completed courses to only those assigned to this category
+                        assigned_courses = []
+                        for course in completed_courses:
+                            course_code = course.get_course_code()
+                            if course_code and requirement_assignments.get(course_code) == self.category:
+                                assigned_courses.append(course)
+                        matching = req.get_completed_courses(assigned_courses)
+                    else:
+                        # If no assignments provided, use all completed courses (backward compatibility)
+                        matching = req.get_completed_courses(completed_courses)
+                else:
+                    # For other requirement types, use all completed courses
+                    matching = req.get_completed_courses(completed_courses)
+                
                 for course in matching:
                     code = course.get_course_code()
                     if code not in used_courses:

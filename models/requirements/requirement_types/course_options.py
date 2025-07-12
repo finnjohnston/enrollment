@@ -21,6 +21,10 @@ class CourseOptionsRequirement(Requirement):
         ]
         return sum(ch for c, ch in matching)
 
+    def get_completed_courses(self, completed_courses):
+        """Returns the subset of completed_courses that satisfy this requirement."""
+        return [course for course in completed_courses if course.get_course_code() in self.options]
+
     def get_possible_courses(self, courses):
         filtered = [course for course in courses if course.get_course_code() in self.options]
         if self.restrictions:

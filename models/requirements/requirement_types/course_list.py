@@ -18,6 +18,10 @@ class CourseListRequirement(Requirement):
             if course.get_course_code() in self.courses
         )
 
+    def get_completed_courses(self, completed_courses):
+        """Returns the subset of completed_courses that satisfy this requirement."""
+        return [course for course in completed_courses if course.get_course_code() in self.courses]
+
     def get_possible_courses(self, courses):
         filtered = [course for course in courses if course.get_course_code() in self.courses]
         if self.restrictions:
