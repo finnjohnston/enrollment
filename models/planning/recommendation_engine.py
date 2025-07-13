@@ -26,7 +26,7 @@ def get_unmet_requirements(programs: List[Program], completed_courses: List[Cour
     for program in programs:
         for category in program.categories:
             # First check if the category as a whole is complete
-            category_progress = category.progress(completed_courses)
+            category_progress = category.progress(completed_courses, requirement_assignments)
             category_complete = category_progress.get("complete", False)
             
             # If the category is complete, skip it entirely
@@ -44,8 +44,12 @@ def get_unmet_requirements(programs: List[Program], completed_courses: List[Cour
                         if requirement_assignments:
                             for course in completed_courses:
                                 course_code = course.get_course_code()
-                                if course_code and requirement_assignments.get(course_code) == category.category:
-                                    assigned_courses.append(course)
+                                if course_code and course_code in requirement_assignments:
+                                    # Check if this course is assigned to this specific category
+                                    for program_name, assigned_category in requirement_assignments[course_code]:
+                                        if assigned_category == category.category:
+                                            assigned_courses.append(course)
+                                            break
                         else:
                             # If no assignments provided, use all completed courses (backward compatibility)
                             assigned_courses = completed_courses
