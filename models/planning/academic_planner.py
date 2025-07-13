@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Tuple
 from models.courses.catalog import Catalog
 from models.courses.course import Course
 from models.requirements.program import Program
@@ -32,24 +32,24 @@ class AcademicPlanner:
         self.assigner = RequirementAssigner(programs)
         self.planner = SemesterPlanner(catalog, self.graph)
     
-    def add_completed_courses(self, course_assignments: Dict[str, str]) -> None:
+    def add_completed_courses(self, course_assignments: Dict[str, List[Tuple[str, str]]]) -> None:
         """
         Add courses to student state and assign them to requirements.
-        
         Args:
-            course_assignments: Dict mapping course_code to requirement category
+            course_assignments: Dict mapping course_code to list of (program_name, category_name) pairs
         """
-        for course_code, category in course_assignments.items():
+        for course_code, assignments in course_assignments.items():
             course = self.catalog.get_by_course_code(course_code)
             if course:
-                # Add to student state completed courses
-                self.student_state.completed_courses.append(course)
-                # Assign to requirement
-                self.assigner.assign_course_to_requirement(course, category)
-                print(f"Added {course_code} for {category}")
+                # Add to student state completed courses (only once)
+                if course not in self.student_state.completed_courses:
+                    self.student_state.completed_courses.append(course)
+                # Assign to all listed (program, category) pairs
+                for program_name, category in assignments:
+                    self.assigner.assign_course_to_requirement(course, category)
+                    print(f"Added {course_code} for {program_name} - {category}")
             else:
                 print(f"Course {course_code} not found in catalog")
-        
         print(f"Completed courses: {[c.get_course_code() for c in self.student_state.get_completed_courses()]}")
         print(f"Assignments: {self.assigner.get_assignment_summary()}")
     
@@ -87,22 +87,37 @@ class AcademicPlanner:
             self.student_state, current_sem, self.assigner.assignments
         )
         
-        print("\nFinal recommendations by category:")
-        for category, items in recommendations.items():
-            print(f"  {category}:")
-            
-            # Build the display list
-            display_list = []
-            for item in items:
-                if isinstance(item, list):
-                    # This is a corequisite group - add as nested list
-                    course_codes = [c.get_course_code() for c in item]
-                    display_list.append(course_codes)
-                else:
-                    # This is an individual course - add as string
-                    display_list.append(item.get_course_code())
-            
-            print(f"    {display_list}")
+        # Organize recommendations by program
+        program_recommendations = {}
+        for program in self.plan_config.programs:
+            program_recommendations[program.name] = {}
+            for category in program.categories:
+                category_name = category.category
+                if category_name in recommendations:
+                    program_recommendations[program.name][category_name] = recommendations[category_name]
+        
+        # Display recommendations organized by program
+        print("\nRecommendations by program:")
+        for program_name, program_recs in program_recommendations.items():
+            print(f"\n  {program_name}:")
+            if not program_recs:
+                print("    No recommendations for this program")
+            else:
+                for category, items in program_recs.items():
+                    print(f"    {category}:")
+                    
+                    # Build the display list
+                    display_list = []
+                    for item in items:
+                        if isinstance(item, list):
+                            # This is a corequisite group - add as nested list
+                            course_codes = [c.get_course_code() for c in item]
+                            display_list.append(course_codes)
+                        else:
+                            # This is an individual course - add as string
+                            display_list.append(item.get_course_code())
+                    
+                    print(f"      {display_list}")
         
         return recommendations
     
@@ -127,12 +142,11 @@ class AcademicPlanner:
         
         return progress_summary
     
-    def plan_semester(self, chosen_courses: Dict[str, str]) -> None:
+    def plan_semester(self, chosen_courses: Dict[str, List[Tuple[str, str]]]) -> None:
         """
         Plan a specific semester by adding chosen courses.
-        
         Args:
-            chosen_courses: Dict mapping course_code to requirement category
+            chosen_courses: Dict mapping course_code to list of (program_name, category_name) pairs
         """
         self.add_completed_courses(chosen_courses)
     
