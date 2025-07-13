@@ -22,23 +22,8 @@ class RequirementCategory:
         used_courses = set()
         for req in self.requirements:
             try:
-                # For CourseFilterRequirement and CourseOptionsRequirement, only count courses assigned to this category
-                if isinstance(req, (CourseFilterRequirement, CourseOptionsRequirement)):
-                    if requirement_assignments:
-                        # Filter completed courses to only those assigned to this category
-                        assigned_courses = []
-                        for course in completed_courses:
-                            course_code = course.get_course_code()
-                            if course_code and requirement_assignments.get(course_code) == self.category:
-                                assigned_courses.append(course)
-                        matching = req.get_completed_courses(assigned_courses)
-                    else:
-                        # If no assignments provided, use all completed courses (backward compatibility)
-                        matching = req.get_completed_courses(completed_courses)
-                else:
-                    # For other requirement types, use all completed courses
-                    matching = req.get_completed_courses(completed_courses)
-                
+                # For CourseFilterRequirement and CourseOptionsRequirement, only count courses in completed_courses (which are now only the explicitly assigned ones)
+                matching = req.get_completed_courses(completed_courses)
                 for course in matching:
                     code = course.get_course_code()
                     if code not in used_courses:

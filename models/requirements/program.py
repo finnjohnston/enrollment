@@ -26,13 +26,26 @@ class Program:
     def is_valid(self) -> bool:
         return self.total_required_credits() <= self.total_credits
     
-    def progress(self, completed_courses: List[Course], requirement_assignments: Optional[Dict[str, str]] = None) -> dict:
+    def progress(self, completed_courses: List[Course], requirement_assignments: Optional[Dict[str, list]] = None) -> dict:
         category_progress = []
         total_earned = 0
         all_categories_complete = True
 
         for category in self.categories:
-            cat_progress = category.progress(completed_courses, requirement_assignments)
+            # Only use courses explicitly assigned to this (program, category)
+            if requirement_assignments:
+                assigned_courses = []
+                for course in completed_courses:
+                    code = course.get_course_code()
+                    if code and code in requirement_assignments:
+                        # requirement_assignments[code] is a list of (program_name, category_name)
+                        for prog, cat in requirement_assignments[code]:
+                            if prog == self.name and cat == category.category:
+                                assigned_courses.append(course)
+                                break
+                cat_progress = category.progress(assigned_courses, None)
+            else:
+                cat_progress = category.progress(completed_courses, None)
             category_progress.append(cat_progress)
             total_earned += cat_progress.get("earned_credits", 0)
             if not cat_progress.get("complete", False):
