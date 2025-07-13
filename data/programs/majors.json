@@ -176,5 +176,69 @@
                 ]
             }
         ]
+    },
+    {
+        "name": "Mathematics - Applied Track",
+        "type": "major",
+        "total_credits": 29,
+        "categories": [
+            {
+                "category": "Calculus Sequence",
+                "min_credits": 11,
+                "requirements": [
+                    {
+                        "type": "compound",
+                        "options": [
+                            {"type": "course_list", "courses": ["MATH 1300", "MATH 1301", "MATH 2300"]},
+                            {"type": "course_list", "courses": ["MATH 1300", "MATH 1301", "MATH 2310"]},
+                            {"type": "course_list", "courses": ["MATH 1300", "MATH 1301", "MATH 2500", "MATH 2501"]}
+                        ]
+                    }
+                ]
+            },
+            {
+                "category": "Linear Algebra and Differential Equations",
+                "min_credits": 6,
+                "requirements": [
+                    {
+                        "type": "compound",
+                        "options": [
+                            {
+                                "type": "compound",
+                                "options": [
+                                    {"type": "course_options", "options": ["MATH 2410", "MATH 2600", "MATH 2500", "MATH 2501"], "min_required": 1},
+                                    {"type": "course_options", "options": ["MATH 2420", "MATH 2610"], "min_required": 1}
+                                ]
+                            },
+                            {
+                                "type": "compound",
+                                "options": [
+                                    {"type": "course_list", "courses": ["MATH 2400"]},
+                                    {"type": "course_options", "options": ["MATH 2600", "MATH 2500", "MATH 2501"], "min_required": 1}
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "category": "Upper-Level Mathematics",
+                "min_credits": 12,
+                "requirements": [
+                    {
+                        "type": "course_options", 
+                        "options": [
+                            "MATH 2810", "MATH 2820", "MATH 2820L", "MATH 2821", "MATH 3010", "MATH 3100", "MATH 3110", "MATH 3120", "MATH 3130", 
+                            "MATH 3200", "MATH 3210", "MATH 3230", "MATH 3300", "MATH 3310", "MATH 3320", "MATH 3330", "MATH 3600", "MATH 3620", 
+                            "MATH 3630", "MATH 3640", "MATH 3641", "MATH 3650", "MATH 3651", "MATH 3660", "MATH 3670", "MATH 3700", "MATH 3710", 
+                            "MATH 3800", "MATH 3859", "MATH 3890", "MATH 4110", "MATH 4200", "MATH 4201", "MATH 4300", "MATH 4301", "MATH 4310", 
+                            "MATH 4320", "MATH 4600", "MATH 4610", "MATH 4620", "MATH 4630", "MATH 4650", "MATH 4651", "MATH 4700", "MATH 4710", 
+                            "MATH 4999"
+                        ],
+                        "min_required": 4
+                    }
+                ]
+            }
+        ]
     }
 ]
