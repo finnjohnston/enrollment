@@ -19,7 +19,7 @@
                     {"type": "course_list", "courses": ["CS 1151"]},
                     {"type": "course_filter", "tags": ["HCA"], "min_credits": 3},
                     {"type": "course_filter", "tags": ["SBS"], "min_credits": 3},
-                    {"type": "course_filter", "tags": ["HCA", "SBS", "US", "INT", "P"], "min_credits": 12}
+                    {"type": "course_filter", "tags": ["HCA", "SBS", "US", "INT", "P"], "min_credits": 9}
                 ]
             },
             {
@@ -207,6 +207,7 @@
                         "options": [
                             {
                                 "type": "compound",
+                                "op": "AND",
                                 "options": [
                                     {"type": "course_options", "options": ["MATH 2410", "MATH 2600", "MATH 2500", "MATH 2501"], "min_required": 1},
                                     {"type": "course_options", "options": ["MATH 2420", "MATH 2610"], "min_required": 1}
@@ -214,6 +215,7 @@
                             },
                             {
                                 "type": "compound",
+                                "op": "AND",
                                 "options": [
                                     {"type": "course_list", "courses": ["MATH 2400"]},
                                     {"type": "course_options", "options": ["MATH 2600", "MATH 2500", "MATH 2501"], "min_required": 1}

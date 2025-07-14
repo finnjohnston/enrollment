@@ -25,8 +25,21 @@ def get_unmet_requirements(programs: List[Program], completed_courses: List[Cour
     unmet = {}
     for program in programs:
         for category in program.categories:
+            # Always filter completed courses to only those assigned to this category
+            if requirement_assignments:
+                assigned_courses = []
+                for course in completed_courses:
+                    course_code = course.get_course_code()
+                    if course_code and course_code in requirement_assignments:
+                        for prog_name, cat_name in requirement_assignments[course_code]:
+                            if prog_name == program.name and cat_name == category.category:
+                                assigned_courses.append(course)
+                                break
+            else:
+                assigned_courses = completed_courses
+
             # First check if the category as a whole is complete
-            category_progress = category.progress(completed_courses, requirement_assignments)
+            category_progress = category.progress(assigned_courses, None)
             category_complete = category_progress.get("complete", False)
             
             # If the category is complete, skip it entirely
@@ -37,61 +50,38 @@ def get_unmet_requirements(programs: List[Program], completed_courses: List[Cour
             unmet_reqs = []
             for req in category.requirements:
                 try:
-                    # For CourseFilterRequirement, only count courses assigned to this category
-                    if isinstance(req, CourseFilterRequirement):
-                        # Filter completed courses to only those assigned to this category
-                        assigned_courses = []
-                        if requirement_assignments:
-                            for course in completed_courses:
-                                course_code = course.get_course_code()
-                                if course_code and course_code in requirement_assignments:
-                                    # Check if this course is assigned to this specific category
-                                    for program_name, assigned_category in requirement_assignments[course_code]:
-                                        if assigned_category == category.category:
-                                            assigned_courses.append(course)
-                                            break
-                        else:
-                            # If no assignments provided, use all completed courses (backward compatibility)
-                            assigned_courses = completed_courses
-                        
-                        satisfied_credits = req.satisfied_credits(assigned_courses)
-                        is_satisfied = satisfied_credits >= (req.min_credits or 0)
+                    satisfied_credits = req.satisfied_credits(assigned_courses)
+                    if isinstance(req, CourseOptionsRequirement):
+                        completed_codes = {c.get_course_code() for c in assigned_courses}
+                        matching_courses = completed_codes.intersection(set(req.options))
+                        is_satisfied = len(matching_courses) >= req.min_required
+                    elif isinstance(req, CourseListRequirement):
+                        completed_codes = {c.get_course_code() for c in assigned_courses}
+                        is_satisfied = all(course in completed_codes for course in req.courses)
+                    elif isinstance(req, CompoundRequirement):
+                        is_satisfied = False
+                        for opt in req.options:
+                            if hasattr(opt, 'min_credits') and getattr(opt, 'min_credits', None) is not None:
+                                if opt.satisfied_credits(assigned_courses) >= getattr(opt, 'min_credits', 0):
+                                    is_satisfied = True
+                                    break
+                            elif hasattr(opt, 'min_required') and getattr(opt, 'min_required', None) is not None:
+                                completed_codes = {c.get_course_code() for c in assigned_courses}
+                                matching_courses = completed_codes.intersection(set(getattr(opt, 'options', [])))
+                                if len(matching_courses) >= getattr(opt, 'min_required', 0):
+                                    is_satisfied = True
+                                    break
+                            elif hasattr(opt, 'courses'):
+                                completed_codes = {c.get_course_code() for c in assigned_courses}
+                                if all(course in completed_codes for course in getattr(opt, 'courses', [])):
+                                    is_satisfied = True
+                                    break
+                            else:
+                                if opt.satisfied_credits(assigned_courses) > 0:
+                                    is_satisfied = True
+                                    break
                     else:
-                        # For other requirement types, use all completed courses
-                        satisfied_credits = req.satisfied_credits(completed_courses)
-
-                        if isinstance(req, CourseOptionsRequirement):
-                            completed_codes = {c.get_course_code() for c in completed_courses}
-                            matching_courses = completed_codes.intersection(set(req.options))
-                            is_satisfied = len(matching_courses) >= req.min_required
-                        elif isinstance(req, CourseListRequirement):
-                            completed_codes = {c.get_course_code() for c in completed_courses}
-                            is_satisfied = all(course in completed_codes for course in req.courses)
-                        elif isinstance(req, CompoundRequirement):
-                            # Satisfied if any option is fully satisfied
-                            is_satisfied = False
-                            for opt in req.options:
-                                if hasattr(opt, 'min_credits') and getattr(opt, 'min_credits', None) is not None:
-                                    if opt.satisfied_credits(completed_courses) >= getattr(opt, 'min_credits', 0):
-                                        is_satisfied = True
-                                        break
-                                elif hasattr(opt, 'min_required') and getattr(opt, 'min_required', None) is not None:
-                                    completed_codes = {c.get_course_code() for c in completed_courses}
-                                    matching_courses = completed_codes.intersection(set(getattr(opt, 'options', [])))
-                                    if len(matching_courses) >= getattr(opt, 'min_required', 0):
-                                        is_satisfied = True
-                                        break
-                                elif hasattr(opt, 'courses'):
-                                    completed_codes = {c.get_course_code() for c in completed_courses}
-                                    if all(course in completed_codes for course in getattr(opt, 'courses', [])):
-                                        is_satisfied = True
-                                        break
-                                else:
-                                    if opt.satisfied_credits(completed_courses) > 0:
-                                        is_satisfied = True
-                                        break
-                        else:
-                            is_satisfied = satisfied_credits > 0
+                        is_satisfied = satisfied_credits > 0
                 except Exception:
                     is_satisfied = False
                 if not is_satisfied:

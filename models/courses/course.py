@@ -53,7 +53,11 @@ class Course:
             return 0
         
     def get_axle_requirements(self):
-        return self.axle if self.axle else []
+        if not self.axle:
+            return []
+        if isinstance(self.axle, list):
+            return self.axle
+        return [self.axle]
     
     def to_dict(self):
         return {

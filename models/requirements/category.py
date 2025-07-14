@@ -38,15 +38,30 @@ class RequirementCategory:
         
         for req in self.requirements:
             try:
-                # For CourseFilterRequirement and CourseOptionsRequirement, only count courses assigned to this category
                 matching = req.get_completed_courses(assigned_courses)
-                for course in matching:
-                    code = course.get_course_code()
-                    if code not in used_courses:
-                        earned += course.get_credit_hours()
-                        used_courses.add(code)
+                # Only consider unused courses
+                unused_matching = [course for course in matching if course.get_course_code() not in used_courses]
+                credits_needed = getattr(req, 'min_credits', None)
+                if credits_needed is not None and credits_needed > 0:
+                    credits_accum = 0
+                    for course in unused_matching:
+                        code = course.get_course_code()
+                        if code not in used_courses:
+                            ch = course.get_credit_hours()
+                            if credits_accum < credits_needed:
+                                earned += ch
+                                credits_accum += ch
+                                used_courses.add(code)
+                            if credits_accum >= credits_needed:
+                                break
+                else:
+                    # For requirements without min_credits, just add all unused matching courses
+                    for course in unused_matching:
+                        code = course.get_course_code()
+                        if code not in used_courses:
+                            earned += course.get_credit_hours()
+                            used_courses.add(code)
             except Exception as e:
-                print(f"Warning: Error calculating satisfied credits for requirement {req}: {e}")
                 continue
 
         restriction_results = []

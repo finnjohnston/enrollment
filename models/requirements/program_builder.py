@@ -32,9 +32,10 @@ class ProgramBuilder:
                 restrictions=restrictions
             )
         elif t == 'compound':
+            op = req_json.get('op', 'OR')
             return CompoundRequirement([
                 ProgramBuilder.build_requirement(opt) for opt in req_json['options']
-            ], restrictions=restrictions)
+            ], restrictions=restrictions, op=op)
         else:
             raise ValueError(f"Unknown requirement type: {t}")
 

@@ -44,18 +44,10 @@ class CourseFilterRequirement(Requirement):
                     continue
                 if self.tags and not any(tag in course.get_axle_requirements() for tag in self.tags):
                     continue
-
-                # Handle course number conversion safely
-                if course.course_number is None:
+                # Use course.level for level filtering
+                if self.min_level and (course.level is None or course.level < self.min_level):
                     continue
-                try:
-                    course_num = int(course.course_number)
-                except (ValueError, TypeError):
-                    continue
-
-                if self.min_level and course_num < self.min_level:
-                    continue
-                if self.max_level and course_num > self.max_level:
+                if self.max_level and (course.level is None or course.level > self.max_level):
                     continue
                 total += course.get_credit_hours()
             except Exception as e:
@@ -72,18 +64,10 @@ class CourseFilterRequirement(Requirement):
                     continue
                 if self.tags and not any(tag in course.get_axle_requirements() for tag in self.tags):
                     continue
-
-                # Handle course number conversion safely
-                if course.course_number is None:
+                # Use course.level for level filtering
+                if self.min_level and (course.level is None or course.level < self.min_level):
                     continue
-                try:
-                    course_num = int(course.course_number)
-                except (ValueError, TypeError):
-                    continue
-
-                if self.min_level and course_num < self.min_level:
-                    continue
-                if self.max_level and course_num > self.max_level:
+                if self.max_level and (course.level is None or course.level > self.max_level):
                     continue
                 matching.append(course)
             except Exception as e:
