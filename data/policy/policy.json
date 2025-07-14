@@ -1,0 +1,9 @@
+[
+  {
+    "program_types": ["SoE Major", "A&S Major"],
+    "rules": [
+      {"type": "no_double_count_within_program"},
+      {"type": "allow_cross_program_overlap", "condition": "must_satisfy_both"}
+    ]
+  }
+] 

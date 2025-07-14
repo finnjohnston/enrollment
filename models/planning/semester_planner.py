@@ -1,4 +1,4 @@
-from typing import Dict, List, Set, Optional
+from typing import Dict, List, Set, Optional, Tuple
 from models.courses.course import Course
 from models.courses.catalog import Catalog
 from models.graph.dependency_graph import DependencyGraph
@@ -17,7 +17,7 @@ class SemesterPlanner:
         self.catalog = catalog
         self.graph = graph
     
-    def get_semester_recommendations(self, student_state: StudentState, semester: Semester, requirement_assignments: Optional[Dict[str, str]] = None) -> Dict[str, List]:
+    def get_semester_recommendations(self, student_state: StudentState, semester: Semester, requirement_assignments: Optional[Dict[str, List[Tuple[str, str]]]] = None) -> Dict[str, List]:
         completed_courses, enrolled_courses = student_state.get_eligibility_context()
         
         programs = [program for program in student_state.plan_config.programs]

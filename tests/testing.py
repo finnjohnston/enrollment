@@ -9,6 +9,7 @@ from models.courses.catalog import Catalog
 from models.requirements.program_builder import ProgramBuilder
 from models.planning.semester import Semester
 from models.planning.academic_planner import AcademicPlanner
+from models.requirements.policy_engine import PolicyEngine
 
 # Load data
 with open("data/courses/parsed.json", 'r') as f:
@@ -22,9 +23,12 @@ with open("data/programs/majors.json", 'r') as f:
     cs_major = ProgramBuilder.build_program(cs_major_data)
     math_major = ProgramBuilder.build_program(math_major_data)
 
+# Initialize policy engine
+policy_engine = PolicyEngine()
+
 # Initialize academic planner
 start_semester = Semester("Fall", 2024)
-planner = AcademicPlanner(catalog, [cs_major, math_major], start_semester)
+planner = AcademicPlanner(catalog, [cs_major, math_major], start_semester, policy_engine=policy_engine)
 
 print("=== Academic Planner Test ===\n")
 
@@ -39,7 +43,15 @@ chosen_courses_sem1 = {
     "ES 1402": [("Computer Science", "Introduction to Engineering")],
     "ES 1403": [("Computer Science", "Introduction to Engineering")]
 }
-planner.plan_semester(chosen_courses_sem1)
+semester_result = planner.plan_semester(chosen_courses_sem1)
+
+print(f"\n=== Semester 1 Results ===")
+print(f"Plan valid: {semester_result['plan_valid']}")
+print(f"Assignment results: {semester_result['assignment_results']}")
+if not semester_result['plan_valid']:
+    print("Plan has validation errors:")
+    for error in semester_result['validation_result']['errors']:
+        print(f"  - {error}")
 
 # Semester 2
 print("\nSEMESTER 2: Planning Spring 2025")
@@ -50,7 +62,15 @@ chosen_courses_sem2 = {
     "MATH 1301": [("Computer Science", "Mathematics - Calculus/Linear Algebra"), ("Mathematics - Applied Track", "Calculus Sequence")],
     "CS 1101": [("Computer Science", "Computer Science Core")]
 }
-planner.plan_semester(chosen_courses_sem2)
+semester_result2 = planner.plan_semester(chosen_courses_sem2)
+
+print(f"\n=== Semester 2 Results ===")
+print(f"Plan valid: {semester_result2['plan_valid']}")
+print(f"Assignment results: {semester_result2['assignment_results']}")
+if not semester_result2['plan_valid']:
+    print("Plan has validation errors:")
+    for error in semester_result2['validation_result']['errors']:
+        print(f"  - {error}")
 
 # Semester 3 - Get recommendations
 print("\nSEMESTER 3: Getting Recommendations for F~ll 2025")

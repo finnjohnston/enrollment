@@ -96,7 +96,8 @@ class ProgramBuilder:
             type=prog_json['type'],
             total_credits=prog_json['total_credits'],
             categories=categories,
-            notes=prog_json.get('notes')
+            notes=prog_json.get('notes'),
+            school=prog_json.get('school')
         )
 
     @staticmethod

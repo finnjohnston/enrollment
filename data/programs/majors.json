@@ -2,6 +2,7 @@
     {
         "name": "Computer Science",
         "type": "major",
+        "school": "School of Engineering",
         "total_credits": 120,
         "categories": [
             {
@@ -180,6 +181,7 @@
     {
         "name": "Mathematics - Applied Track",
         "type": "major",
+        "school": "College of Arts and Science",
         "total_credits": 29,
         "categories": [
             {

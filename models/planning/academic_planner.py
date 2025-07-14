@@ -8,6 +8,7 @@ from models.planning.semester import Semester
 from models.planning.student_state import StudentState
 from models.planning.semester_planner import SemesterPlanner
 from models.planning.requirement_assigner import RequirementAssigner
+from models.requirements.policy_engine import PolicyEngine
 
 
 class AcademicPlanner:
@@ -16,7 +17,7 @@ class AcademicPlanner:
     Manages student state, course assignments, semester progression, and recommendations.
     """
     
-    def __init__(self, catalog: Catalog, programs: List[Program], start_semester: Semester):
+    def __init__(self, catalog: Catalog, programs: List[Program], start_semester: Semester, policy_engine: Optional[PolicyEngine] = None):
         """
         Initialize the academic planner with catalog, programs, and starting semester.
         
@@ -24,12 +25,14 @@ class AcademicPlanner:
             catalog: Course catalog containing all available courses
             programs: List of degree programs (majors/minors)
             start_semester: Starting semester for planning
+            policy_engine: Policy engine for overlap policies (optional)
         """
         self.catalog = catalog
         self.graph = DependencyGraph(catalog)
         self.plan_config = PlanConfig(programs, [], start_semester.season, start_semester.year, 4)
         self.student_state = StudentState(self.plan_config, start_semester)
-        self.assigner = RequirementAssigner(programs)
+        self.policy_engine = policy_engine or PolicyEngine()
+        self.assigner = RequirementAssigner(programs, self.policy_engine)
         self.planner = SemesterPlanner(catalog, self.graph)
     
     def add_completed_courses(self, course_assignments: Dict[str, List[Tuple[str, str]]]) -> None:
@@ -49,7 +52,7 @@ class AcademicPlanner:
                     self.assigner.assign_course_to_requirement(course, category)
                     print(f"Added {course_code} for {program_name} - {category}")
             else:
-                print(f"Course {course_code} not found in catalog")
+                print(f"Course '{course_code}' not found in catalog")
         print(f"Completed courses: {[c.get_course_code() for c in self.student_state.get_completed_courses()]}")
         print(f"Assignments: {self.assigner.get_assignment_summary()}")
     
@@ -84,7 +87,7 @@ class AcademicPlanner:
         
         # Get recommendations using SemesterPlanner
         recommendations = self.planner.get_semester_recommendations(
-            self.student_state, current_sem, self.assigner.assignments
+            self.student_state, current_sem, self.assigner.get_assignment_summary()
         )
         
         # Organize recommendations by program
@@ -142,13 +145,47 @@ class AcademicPlanner:
         
         return progress_summary
     
-    def plan_semester(self, chosen_courses: Dict[str, List[Tuple[str, str]]]) -> None:
+    def plan_semester(self, chosen_courses: Dict[str, List[Tuple[str, str]]]) -> Dict[str, Any]:
         """
-        Plan a specific semester by adding chosen courses.
+        Plan a specific semester by adding chosen courses with batch validation.
         Args:
             chosen_courses: Dict mapping course_code to list of (program_name, category_name) pairs
+        Returns:
+            Dictionary with assignment results and validation status
         """
-        self.add_completed_courses(chosen_courses)
+        # Try to add all courses
+        results = {}
+        for course_code, assignments in chosen_courses.items():
+            course = self.catalog.get_by_course_code(course_code)
+            if course:
+                # Add to student state completed courses (only once)
+                if course not in self.student_state.completed_courses:
+                    self.student_state.completed_courses.append(course)
+                
+                # Try to assign to all listed (program, category) pairs
+                for program_name, category in assignments:
+                    success = self.assigner.assign_course_to_requirement(course, category)
+                    results[f"{course_code} -> {program_name} - {category}"] = success
+                    if success:
+                        print(f"Added {course_code} for {program_name} - {category}")
+                    else:
+                        # Error message already printed by assigner
+                        pass
+            else:
+                print(f"Course '{course_code}' not found in catalog")
+                results[f"{course_code}"] = False
+        
+        print(f"Completed courses: {[c.get_course_code() for c in self.student_state.get_completed_courses()]}")
+        print(f"Assignments: {self.assigner.get_assignment_summary()}")
+        
+        # Validate entire plan
+        validation_result = self.validate_plan()
+        
+        return {
+            "assignment_results": results,
+            "validation_result": validation_result,
+            "plan_valid": validation_result['is_valid']
+        }
     
     def get_current_semester(self) -> Optional[Semester]:
         """Get the current semester being planned."""
@@ -158,9 +195,13 @@ class AcademicPlanner:
         """Get all completed courses."""
         return self.student_state.get_completed_courses()
     
-    def get_assignments(self) -> Dict[str, List[str]]:
+    def get_assignments(self) -> Dict[str, List[Tuple[str, str]]]:
         """Get current course-to-requirement assignments."""
         return self.assigner.get_assignment_summary()
+    
+    def validate_plan(self) -> Dict[str, Any]:
+        """Validate the current plan against all applicable overlap policies."""
+        return self.assigner.validate_plan()
     
     def __repr__(self):
         current_sem = self.student_state.get_current_semester()

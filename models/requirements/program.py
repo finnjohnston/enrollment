@@ -7,12 +7,13 @@ class Program:
     Represents a major or minor program.
     """
 
-    def __init__(self, name: str, type: Literal["major", "minor"], total_credits: int, categories: Optional[List[RequirementCategory]] = None, notes: Optional[str] = None):
+    def __init__(self, name: str, type: Literal["major", "minor"], total_credits: int, categories: Optional[List[RequirementCategory]] = None, notes: Optional[str] = None, school: Optional[str] = None):
         self.name = name
         self.type = type
         self.total_credits = total_credits
         self.categories = categories or []
         self.notes = notes
+        self.school = school
 
     def get_category(self, category_name: str) -> Optional[RequirementCategory]:
         for category in self.categories:

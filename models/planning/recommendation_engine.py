@@ -11,7 +11,7 @@ from models.graph.eligibility import CourseEligibility
 from models.graph.dependency_graph import DependencyGraph
 
 
-def get_unmet_requirements(programs: List[Program], completed_courses: List[Course], requirement_assignments: Optional[Dict[str, str]] = None) -> Dict[Tuple[str, str], List[Requirement]]:
+def get_unmet_requirements(programs: List[Program], completed_courses: List[Course], requirement_assignments: Optional[Dict[str, List[Tuple[str, str]]]] = None) -> Dict[Tuple[str, str], List[Requirement]]:
     """
     Given a list of Program objects and a list of completed Course objects,
     return a dict mapping (program_name, category_name) to a list of unmet requirement objects for that category in that program.
