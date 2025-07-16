@@ -25,12 +25,20 @@ class CourseFilterRequirement(Requirement):
                  min_level: Optional[int] = None, max_level: Optional[int] = None, 
                  min_credits: Optional[int] = None, note: Optional[str] = None, restrictions=None):
         super().__init__(restrictions=restrictions)
-        self.subject = subject
-        # Handle both string and list inputs for tags
+        if subject is not None and not isinstance(subject, str):
+            raise ValueError("subject must be a string if provided")
         if isinstance(tags, str):
-            self.tags = [tags]
-        else:
-            self.tags = tags if tags is not None else []
+            tags = [tags]
+        if tags is not None and not all(isinstance(tag, str) for tag in tags):
+            raise ValueError("tags must be a list of strings")
+        if min_level is not None and (not isinstance(min_level, int) or min_level < 0):
+            raise ValueError("min_level must be a non-negative integer")
+        if max_level is not None and (not isinstance(max_level, int) or max_level < 0):
+            raise ValueError("max_level must be a non-negative integer")
+        if min_credits is not None and (not isinstance(min_credits, int) or min_credits < 0):
+            raise ValueError("min_credits must be a non-negative integer")
+        self.subject = subject
+        self.tags = tags if tags is not None else []
         self.min_level = min_level
         self.max_level = max_level
         self.min_credits = min_credits
@@ -54,7 +62,10 @@ class CourseFilterRequirement(Requirement):
         key = _req_cache_key('req_credits', self.subject, self.tags, self.min_level, self.max_level, self.min_credits, completed_courses)
         cached = redis_client.get(key)
         if isinstance(cached, bytes):
-            return int(cached.decode())
+            try:
+                return int(cached.decode())
+            except Exception:
+                invalidate_requirement_cache()
         total = 0
         for course in completed_courses:
             try:
@@ -80,7 +91,10 @@ class CourseFilterRequirement(Requirement):
         cached = redis_client.get(key)
         if isinstance(cached, bytes):
             import pickle
-            return pickle.loads(cached)
+            try:
+                return pickle.loads(cached)
+            except Exception:
+                invalidate_requirement_cache()
         matching = []
         for course in completed_courses:
             try:

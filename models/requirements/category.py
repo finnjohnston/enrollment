@@ -11,6 +11,12 @@ class RequirementCategory:
     """
 
     def __init__(self, category: str, min_credits: int, requirements: Optional[Sequence[Requirement]] = None, restrictions: Optional[RestrictionGroup] = None, notes: Optional[str] = None):
+        if not isinstance(category, str) or not category.strip():
+            raise ValueError("category must be a non-empty string")
+        if not isinstance(min_credits, int) or min_credits < 0:
+            raise ValueError("min_credits must be a non-negative integer")
+        if requirements is not None and not all(isinstance(req, Requirement) for req in requirements):
+            raise ValueError("All requirements must be Requirement instances")
         self.category = category
         self.min_credits = min_credits
         self.requirements = list(requirements) if requirements else []

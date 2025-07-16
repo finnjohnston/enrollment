@@ -14,12 +14,10 @@ from models.requirements.policy_engine import PolicyEngine
 # Load data
 catalog = Catalog()
 
-with open("db/data/programs/majors.json", 'r') as f:
-    majors_data = json.load(f)
-    cs_major_data = majors_data[0]
-    math_major_data = majors_data[1]
-    cs_major = ProgramBuilder.build_program(cs_major_data)
-    math_major = ProgramBuilder.build_program(math_major_data)
+# Build programs from the database
+programs = ProgramBuilder.build_programs_from_db()
+cs_major = programs[0]
+math_major = programs[1]
 
 # Initialize policy engine
 policy_engine = PolicyEngine()

@@ -58,6 +58,17 @@ class PolicyEngine:
                 config_path = os.path.join(os.path.dirname(__file__), '../../db/data/policy/policy.json')
             with open(config_path, 'r') as f:
                 self.policy_config = json.load(f)
+        # Validation
+        if not isinstance(self.policy_config, list) or not all(isinstance(p, dict) for p in self.policy_config):
+            raise ValueError("policy_config must be a list of dicts")
+        for policy in self.policy_config:
+            if 'program_types' not in policy or 'rules' not in policy:
+                raise ValueError("Each policy must have 'program_types' and 'rules'")
+            if not isinstance(policy['rules'], list):
+                raise ValueError("'rules' must be a list")
+            for rule in policy['rules']:
+                if 'type' not in rule or rule['type'] not in RULE_FUNCTIONS:
+                    raise ValueError(f"Rule type '{rule.get('type')}' is not registered in RULE_FUNCTIONS")
 
     def get_policy(self, programs: List[Any]) -> List[Dict]:
         # Find all policies that match the set of program types

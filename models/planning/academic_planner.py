@@ -44,13 +44,19 @@ class AcademicPlanner:
             course_assignments: Dict mapping course_code to list of (program_name, category_name) pairs
         """
         for course_code, assignments in course_assignments.items():
+            if not isinstance(course_code, str) or not course_code.strip():
+                raise ValueError(f"Invalid course code: {course_code}")
+            if not isinstance(assignments, list) or not all(isinstance(a, tuple) and len(a) == 2 for a in assignments):
+                raise ValueError(f"Assignments for {course_code} must be a list of (program_name, category_name) tuples")
             course = self.catalog.get_by_course_code(course_code)
             if course:
-                # Add to student state completed courses (only once)
                 if course not in self.student_state.completed_courses:
                     self.student_state.completed_courses.append(course)
-                # Assign to all listed (program, category) pairs
                 for program_name, category in assignments:
+                    if not isinstance(program_name, str) or not program_name.strip():
+                        raise ValueError(f"Invalid program name: {program_name}")
+                    if not isinstance(category, str) or not category.strip():
+                        raise ValueError(f"Invalid category name: {category}")
                     self.assigner.assign_course_to_requirement(course, category)
                     print(f"Added {course_code} for {program_name} - {category}")
             else:
@@ -157,36 +163,33 @@ class AcademicPlanner:
         Returns:
             Dictionary with assignment results and validation status
         """
-        # Try to add all courses
         results = {}
         for course_code, assignments in chosen_courses.items():
+            if not isinstance(course_code, str) or not course_code.strip():
+                raise ValueError(f"Invalid course code: {course_code}")
+            if not isinstance(assignments, list) or not all(isinstance(a, tuple) and len(a) == 2 for a in assignments):
+                raise ValueError(f"Assignments for {course_code} must be a list of (program_name, category_name) tuples")
             course = self.catalog.get_by_course_code(course_code)
             if course:
-                # Add to student state completed courses (only once)
                 if course not in self.student_state.completed_courses:
                     self.student_state.completed_courses.append(course)
-                
-                # Try to assign to all listed (program, category) pairs
                 for program_name, category in assignments:
+                    if not isinstance(program_name, str) or not program_name.strip():
+                        raise ValueError(f"Invalid program name: {program_name}")
+                    if not isinstance(category, str) or not category.strip():
+                        raise ValueError(f"Invalid category name: {category}")
                     success = self.assigner.assign_course_to_requirement(course, category)
                     results[f"{course_code} -> {program_name} - {category}"] = success
                     if success:
                         print(f"Added {course_code} for {program_name} - {category}")
-                    else:
-                        # Error message already printed by assigner
-                        pass
             else:
                 print(f"Course '{course_code}' not found in catalog")
                 results[f"{course_code}"] = False
-        
         print(f"Completed courses: {[c.get_course_code() for c in self.student_state.get_completed_courses()]}")
         print(f"Assignments: {self.assigner.get_assignment_summary()}")
         invalidate_requirement_cache()
         invalidate_graph_cache()
-        
-        # Validate entire plan
         validation_result = self.validate_plan()
-        
         return {
             "assignment_results": results,
             "validation_result": validation_result,

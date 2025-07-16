@@ -26,6 +26,10 @@ class CompoundRequirement(Requirement):
 
     def __init__(self, options: List[Requirement], restrictions=None, op: str = "OR"):
         super().__init__(restrictions=restrictions)
+        if not isinstance(options, list) or not all(isinstance(opt, Requirement) for opt in options):
+            raise ValueError("options must be a list of Requirement instances")
+        if op.upper() not in ("AND", "OR"):
+            raise ValueError("op must be 'AND' or 'OR'")
         self.options = options
         self.op = op.upper()  # 'AND' or 'OR'
 
@@ -39,9 +43,11 @@ class CompoundRequirement(Requirement):
         key = _req_cache_key('req_credits', self.op, self.options, completed_courses)
         cached = redis_client.get(key)
         if isinstance(cached, bytes):
-            return int(cached.decode())
+            try:
+                return int(cached.decode())
+            except Exception:
+                invalidate_requirement_cache()
         if self.op == "AND":
-            # Sum credits from all options
             total_credits = 0
             for opt in self.options:
                 total_credits += opt.satisfied_credits(completed_courses)
@@ -62,9 +68,11 @@ class CompoundRequirement(Requirement):
         cached = redis_client.get(key)
         if isinstance(cached, bytes):
             import pickle
-            return pickle.loads(cached)
+            try:
+                return pickle.loads(cached)
+            except Exception:
+                invalidate_requirement_cache()
         if self.op == "AND":
-            # Union of all completed courses for all options
             all_courses = []
             seen = set()
             for opt in self.options:

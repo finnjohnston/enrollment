@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 from .base import Base
 
 class Requirement(Base):
@@ -15,4 +15,22 @@ class Requirement(Base):
     category = relationship('RequirementCategory', back_populates='requirements')
 
     def __repr__(self):
-        return f"<Requirement(type={self.type}, category_id={self.category_id})>" 
+        return f"<Requirement(type={self.type}, category_id={self.category_id})>"
+
+    @validates('type')
+    def validate_type(self, key, value):
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("type must be a non-empty string")
+        return value
+
+    @validates('data')
+    def validate_data(self, key, value):
+        if not isinstance(value, dict):
+            raise ValueError("data must be a dictionary")
+        return value
+
+    @validates('min_credits')
+    def validate_min_credits(self, key, value):
+        if value is not None and (not isinstance(value, int) or value < 0):
+            raise ValueError("min_credits must be a non-negative integer")
+        return value 

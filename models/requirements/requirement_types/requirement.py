@@ -8,6 +8,8 @@ class Requirement:
     
     def __init__(self, restrictions: Optional[object] = None):
         self.restrictions = restrictions
+        # Example: if restrictions is not None and not isinstance(restrictions, (RestrictionGroup, ...)):
+        #     raise ValueError("restrictions must be a valid restriction group or None")
     
     def describe(self) -> str:
         raise NotImplementedError("Subclasses must implement describe()")

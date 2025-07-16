@@ -19,6 +19,8 @@ class CourseListRequirement(Requirement):
     """
     def __init__(self, courses, restrictions=None):
         super().__init__(restrictions=restrictions)
+        if not isinstance(courses, list) or not all(isinstance(c, str) and c.strip() for c in courses):
+            raise ValueError("courses must be a list of non-empty strings")
         self.courses = courses
 
     def describe(self):
@@ -28,7 +30,10 @@ class CourseListRequirement(Requirement):
         key = _req_cache_key('req_credits', ','.join(sorted(self.courses)), completed_courses)
         cached = redis_client.get(key)
         if isinstance(cached, bytes):
-            return int(cached.decode())
+            try:
+                return int(cached.decode())
+            except Exception:
+                invalidate_requirement_cache()
         result = sum(
             course.get_credit_hours()
             for course in completed_courses
@@ -43,7 +48,10 @@ class CourseListRequirement(Requirement):
         cached = redis_client.get(key)
         if isinstance(cached, bytes):
             import pickle
-            return pickle.loads(cached)
+            try:
+                return pickle.loads(cached)
+            except Exception:
+                invalidate_requirement_cache()
         result = [course for course in completed_courses if course.get_course_code() in self.courses]
         import pickle
         redis_client.set(key, pickle.dumps(result))

@@ -20,6 +20,10 @@ class CourseOptionsRequirement(Requirement):
 
     def __init__(self, options, min_required = 1, restrictions=None):
         super().__init__(restrictions=restrictions)
+        if not isinstance(options, list) or not all(isinstance(o, str) and o.strip() for o in options):
+            raise ValueError("options must be a list of non-empty strings")
+        if not isinstance(min_required, int) or min_required < 1:
+            raise ValueError("min_required must be a positive integer")
         self.options = options
         self.min_required = min_required
 
@@ -30,7 +34,10 @@ class CourseOptionsRequirement(Requirement):
         key = _req_cache_key('req_credits', ','.join(sorted(self.options)), completed_courses)
         cached = redis_client.get(key)
         if isinstance(cached, bytes):
-            return int(cached.decode())
+            try:
+                return int(cached.decode())
+            except Exception:
+                invalidate_requirement_cache()
         matching = [
             (course, course.get_credit_hours())
             for course in completed_courses
@@ -46,7 +53,10 @@ class CourseOptionsRequirement(Requirement):
         cached = redis_client.get(key)
         if isinstance(cached, bytes):
             import pickle
-            return pickle.loads(cached)
+            try:
+                return pickle.loads(cached)
+            except Exception:
+                invalidate_requirement_cache()
         result = [course for course in completed_courses if course.get_course_code() in self.options]
         import pickle
         redis_client.set(key, pickle.dumps(result))

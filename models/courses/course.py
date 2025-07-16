@@ -26,9 +26,19 @@ class Course:
 
         self.description = course_data.get('description')
 
+        # Validation
+        if not isinstance(self.course_code, str) or not self.course_code.strip():
+            raise ValueError("course_code must be a non-empty string")
+        if not isinstance(self.title, str) or not self.title.strip():
+            raise ValueError("title must be a non-empty string")
+        if self.credits is not None and (not isinstance(self.credits, int) or self.credits < 0):
+            raise ValueError("credits must be a non-negative integer")
+        if self.level is not None and (not isinstance(self.level, int) or self.level < 0):
+            raise ValueError("level must be a non-negative integer")
+
     @classmethod
     def from_orm(cls, orm_course):
-        return cls({
+        data = {
             'subject_name': orm_course.subject_name,
             'title': orm_course.title,
             'course_code': orm_course.course_code,
@@ -40,7 +50,17 @@ class Course:
             'prerequisites': orm_course.prerequisites,
             'corequisites': orm_course.corequisites,
             'description': orm_course.description
-        })
+        }
+        # Validation
+        if not isinstance(data['course_code'], str) or not data['course_code'].strip():
+            raise ValueError("course_code must be a non-empty string")
+        if not isinstance(data['title'], str) or not data['title'].strip():
+            raise ValueError("title must be a non-empty string")
+        if data['credits'] is not None and (not isinstance(data['credits'], int) or data['credits'] < 0):
+            raise ValueError("credits must be a non-negative integer")
+        if data['level'] is not None and (not isinstance(data['level'], int) or data['level'] < 0):
+            raise ValueError("level must be a non-negative integer")
+        return cls(data)
 
     def __str__(self):
         return f"{self.course_code}: {self.title}"
