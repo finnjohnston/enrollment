@@ -1,14 +1,19 @@
 from collections import defaultdict
 from typing import List, Optional, Dict, Any
 from .course import Course
+from db.database import SessionLocal
+from db.models.course import Course as ORMCourse
 
 class Catalog:
     """
     Data structure for course storage and fast indexed access.
     """
 
-    def __init__(self, courses_data: List[Dict[str, Any]]):
-        self.courses: List[Course] = [Course(cd) for cd in courses_data]
+    def __init__(self):
+        session = SessionLocal()
+        orm_courses = session.query(ORMCourse).all()
+        self.courses: List[Course] = [Course.from_orm(oc) for oc in orm_courses]
+        session.close()
 
         # Core direct lookups
         self.by_course_code: Dict[str, Course] = {}

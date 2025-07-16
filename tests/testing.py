@@ -12,11 +12,9 @@ from models.planning.academic_planner import AcademicPlanner
 from models.requirements.policy_engine import PolicyEngine
 
 # Load data
-with open("data/courses/parsed.json", 'r') as f:
-    courses_data = json.load(f)
-    catalog = Catalog(courses_data)
+catalog = Catalog()
 
-with open("data/programs/majors.json", 'r') as f:
+with open("db/data/programs/majors.json", 'r') as f:
     majors_data = json.load(f)
     cs_major_data = majors_data[0]
     math_major_data = majors_data[1]

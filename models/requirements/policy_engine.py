@@ -55,7 +55,7 @@ class PolicyEngine:
         else:
             # Load from JSON file
             if config_path is None:
-                config_path = os.path.join(os.path.dirname(__file__), '../../data/policy/policy.json')
+                config_path = os.path.join(os.path.dirname(__file__), '../../db/data/policy/policy.json')
             with open(config_path, 'r') as f:
                 self.policy_config = json.load(f)
 

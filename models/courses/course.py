@@ -26,6 +26,22 @@ class Course:
 
         self.description = course_data.get('description')
 
+    @classmethod
+    def from_orm(cls, orm_course):
+        return cls({
+            'subject_name': orm_course.subject_name,
+            'title': orm_course.title,
+            'course_code': orm_course.course_code,
+            'subject_code': orm_course.subject_code,
+            'course_number': orm_course.course_number,
+            'level': orm_course.level,
+            'axle': orm_course.axle,
+            'credits': orm_course.credits,
+            'prerequisites': orm_course.prerequisites,
+            'corequisites': orm_course.corequisites,
+            'description': orm_course.description
+        })
+
     def __str__(self):
         return f"{self.course_code}: {self.title}"
     
