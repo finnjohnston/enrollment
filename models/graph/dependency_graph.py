@@ -5,6 +5,18 @@ from models.requirements.requirement_types.requirement import Requirement
 from models.requirements.requirement_types.course_list import CourseListRequirement
 from models.requirements.requirement_types.course_options import CourseOptionsRequirement
 from models.graph.logic import PrerequisiteLogic, CorequisiteLogic
+import redis
+
+redis_client = redis.Redis(host='localhost', port=6379, db=0)
+
+def _graph_cache_key(course_code, traversal):
+    return f"graph:{course_code}|traversal:{traversal}"
+
+def invalidate_graph_cache():
+    for pattern in ["graph:*"]:
+        keys = redis_client.keys(pattern)
+        if isinstance(keys, (list, tuple, set)) and keys:
+            redis_client.delete(*keys)
 
 class DependencyGraph:
     """
@@ -116,20 +128,47 @@ class DependencyGraph:
     # === BASIC NAVIGATION ===
     
     def get_prerequisites(self, course_code: str) -> List[str]:
+        key = _graph_cache_key(course_code, 'prerequisites')
+        cached = redis_client.get(key)
+        if isinstance(cached, bytes):
+            import json
+            return json.loads(cached.decode())
         if not course_code or not isinstance(course_code, str):
             return []
-        return list(self.reverse_adjacency.get(course_code, set()))
+        result = list(self.reverse_adjacency.get(course_code, set()))
+        import json
+        redis_client.set(key, json.dumps(result))
+        invalidate_graph_cache()
+        return result
 
     def get_corequisites(self, course_code: str) -> List[str]:
+        key = _graph_cache_key(course_code, 'corequisites')
+        cached = redis_client.get(key)
+        if isinstance(cached, bytes):
+            import json
+            return json.loads(cached.decode())
         if not course_code or not isinstance(course_code, str):
             return []
         logic = self.coreq_logic.get(course_code)
-        return list(logic.get_all_courses()) if logic else []
+        result = list(logic.get_all_courses()) if logic else []
+        import json
+        redis_client.set(key, json.dumps(result))
+        invalidate_graph_cache()
+        return result
 
     def get_dependents(self, course_code: str) -> List[str]:
+        key = _graph_cache_key(course_code, 'dependents')
+        cached = redis_client.get(key)
+        if isinstance(cached, bytes):
+            import json
+            return json.loads(cached.decode())
         if not course_code or not isinstance(course_code, str):
             return []
-        return list(self.adjacency.get(course_code, set()))
+        result = list(self.adjacency.get(course_code, set()))
+        import json
+        redis_client.set(key, json.dumps(result))
+        invalidate_graph_cache()
+        return result
 
     def get_edges(self, course_code: str) -> Dict[str, List[str]]:
         coreqs = []

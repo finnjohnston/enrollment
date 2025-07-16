@@ -1,18 +1,34 @@
 from typing import Set
 from .dependency_graph import DependencyGraph
+import redis
+
+redis_client = redis.Redis(host='localhost', port=6379, db=0)
+
+def _eligibility_cache_key(course_code, completed_courses, enrolled_courses):
+    # Sort sets to ensure consistent key
+    completed = ','.join(sorted(completed_courses))
+    enrolled = ','.join(sorted(enrolled_courses))
+    return f"eligibility:{course_code}|completed:{completed}|enrolled:{enrolled}"
 
 class CourseEligibility:
     @staticmethod
     def is_course_eligible(course_code: str, completed_courses: Set[str], enrolled_courses: Set[str], graph: DependencyGraph) -> bool:
+        key = _eligibility_cache_key(course_code, completed_courses, enrolled_courses)
+        cached = redis_client.get(key)
+        if cached is not None:
+            return cached == b'True'
+        
         # Treat enrolled_courses as the same as completed_courses
         all_completed = set(completed_courses) | set(enrolled_courses)
         if course_code in all_completed:
+            redis_client.set(key, 'False')
             return False
         
         # Check prerequisites first
         prereq_logic = graph.get_prerequisite_logic(course_code)
         prereqs_ok = prereq_logic.is_satisfied(all_completed) if prereq_logic else True
         if not prereqs_ok:
+            redis_client.set(key, 'False')
             return False
         
         # Handle mutual corequisites
@@ -23,6 +39,7 @@ class CourseEligibility:
             # or if the entire group can be taken together
             if group.intersection(completed_courses):
                 # If any course in the group is already completed, not eligible
+                redis_client.set(key, 'False')
                 return False
             # If none are completed, check if ALL courses in the group are eligible to be taken together
             for group_course in group:
@@ -30,8 +47,10 @@ class CourseEligibility:
                 prereq_logic = graph.get_prerequisite_logic(group_course)
                 if prereq_logic and not prereq_logic.is_satisfied(all_completed):
                     # If any course in the group has unsatisfied prerequisites, the whole group is ineligible
+                    redis_client.set(key, 'False')
                     return False
             # All courses in the group are eligible to be taken together
+            redis_client.set(key, 'True')
             return True
         
         # For regular corequisites, check if they can be satisfied
@@ -45,6 +64,7 @@ class CourseEligibility:
                 coreq_courses = coreq_logic.get_all_courses()
                 # If any corequisite is already completed, we can take this course
                 if coreq_courses.intersection(completed_courses):
+                    redis_client.set(key, 'True')
                     return True
                 # If no corequisites are completed, check if they can be taken together
                 # For now, we'll be conservative and only allow if the corequisites
@@ -58,12 +78,17 @@ class CourseEligibility:
                         if prereq_logic:
                             coreq_prereqs_ok = prereq_logic.is_satisfied(all_completed)
                             if not coreq_prereqs_ok:
+                                redis_client.set(key, 'False')
                                 return False
+                        redis_client.set(key, 'True')
                         return True
                 # For complex corequisite groups, be conservative and require them to be completed
+                redis_client.set(key, 'False')
                 return False
+            redis_client.set(key, 'True')
             return True
         
+        redis_client.set(key, 'True')
         return True
 
     @staticmethod

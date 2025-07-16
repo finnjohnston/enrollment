@@ -9,6 +9,8 @@ from models.planning.student_state import StudentState
 from models.planning.semester_planner import SemesterPlanner
 from models.planning.requirement_assigner import RequirementAssigner
 from models.requirements.policy_engine import PolicyEngine
+from models.requirements.requirement_types.course_list import invalidate_requirement_cache
+from models.graph.dependency_graph import invalidate_graph_cache
 
 
 class AcademicPlanner:
@@ -55,6 +57,8 @@ class AcademicPlanner:
                 print(f"Course '{course_code}' not found in catalog")
         print(f"Completed courses: {[c.get_course_code() for c in self.student_state.get_completed_courses()]}")
         print(f"Assignments: {self.assigner.get_assignment_summary()}")
+        invalidate_requirement_cache()
+        invalidate_graph_cache()
     
     def advance_semester(self) -> None:
         """Move to the next semester."""
@@ -177,6 +181,8 @@ class AcademicPlanner:
         
         print(f"Completed courses: {[c.get_course_code() for c in self.student_state.get_completed_courses()]}")
         print(f"Assignments: {self.assigner.get_assignment_summary()}")
+        invalidate_requirement_cache()
+        invalidate_graph_cache()
         
         # Validate entire plan
         validation_result = self.validate_plan()

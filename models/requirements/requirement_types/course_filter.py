@@ -1,6 +1,20 @@
 from typing import List, Optional, Union, cast
 from .requirement import Requirement
 from models.courses.course import Course
+import redis
+
+redis_client = redis.Redis(host='localhost', port=6379, db=0)
+
+def _req_cache_key(prefix, subject, tags, min_level, max_level, min_credits, completed_courses):
+    completed = ','.join(sorted([c.get_course_code() for c in completed_courses]))
+    tags_str = ','.join(sorted(tags)) if tags else ''
+    return f"{prefix}:{subject}|tags:{tags_str}|minlvl:{min_level}|maxlvl:{max_level}|mincred:{min_credits}|completed:{completed}"
+
+def invalidate_requirement_cache():
+    for pattern in ["req_credits:*", "req_completed:*"]:
+        keys = redis_client.keys(pattern)
+        if isinstance(keys, (list, tuple, set)) and keys:
+            redis_client.delete(*keys)
 
 class CourseFilterRequirement(Requirement):
     """
@@ -37,6 +51,10 @@ class CourseFilterRequirement(Requirement):
         return f"Take at least {self.min_credits} credits from courses matching: " + ", ".join(parts)
     
     def satisfied_credits(self, completed_courses: List[Course]) -> int:
+        key = _req_cache_key('req_credits', self.subject, self.tags, self.min_level, self.max_level, self.min_credits, completed_courses)
+        cached = redis_client.get(key)
+        if isinstance(cached, bytes):
+            return int(cached.decode())
         total = 0
         for course in completed_courses:
             try:
@@ -53,10 +71,16 @@ class CourseFilterRequirement(Requirement):
             except Exception as e:
                 print(f"Warning: Error processing course {course}: {e}")
                 continue
+        redis_client.set(key, total)
+        invalidate_requirement_cache()
         return total
 
     def get_completed_courses(self, completed_courses: List[Course]) -> List[Course]:
-        """Returns the subset of completed_courses that satisfy this requirement."""
+        key = _req_cache_key('req_completed', self.subject, self.tags, self.min_level, self.max_level, self.min_credits, completed_courses)
+        cached = redis_client.get(key)
+        if isinstance(cached, bytes):
+            import pickle
+            return pickle.loads(cached)
         matching = []
         for course in completed_courses:
             try:
@@ -73,6 +97,9 @@ class CourseFilterRequirement(Requirement):
             except Exception as e:
                 print(f"Warning: Error processing course {course}: {e}")
                 continue
+        import pickle
+        redis_client.set(key, pickle.dumps(matching))
+        invalidate_requirement_cache()
         return matching
 
     def get_possible_courses(self, courses: List[Course]) -> List[Course]:
