@@ -4,105 +4,92 @@ from .category import RequirementCategory
 from .requirement_types import CourseListRequirement, CourseOptionsRequirement, CourseFilterRequirement, CompoundRequirement
 from .restrictions import ExclusionRestriction, CourseGroupRestriction, CreditLimitRestriction, DistributionRestriction, TagQuotaRestriction, SubjectQuotaRestriction, LevelQuotaRestriction
 from models.requirements.restrictions.group import RestrictionGroup
+from db.database import SessionLocal
+from db.models.program import Program as ORMProgram
+from db.models.requirement_category import RequirementCategory as ORMCategory
+from db.models.requirement import Requirement as ORMRequirement
 
 class ProgramBuilder:
     @staticmethod
-    def build_requirement(req_json):
-        t = req_json.get('type')
-        restrictions = None
-        if 'restrictions' in req_json and req_json['restrictions']:
-            built_restriction = ProgramBuilder.build_restriction(req_json['restrictions'])
-            if built_restriction is not None:
-                if not isinstance(built_restriction, RestrictionGroup):
-                    restrictions = RestrictionGroup([built_restriction])
-                else:
-                    restrictions = built_restriction
+    def build_requirement_from_db(req_orm):
+        # If req_orm is a dict (from JSONB), use dict logic
+        if isinstance(req_orm, dict):
+            t = req_orm.get('type')
+            data = req_orm.get('data', req_orm)
+            restrictions = None  # TODO: handle restrictions if present in DB
+            if t == 'course_list':
+                return CourseListRequirement(data.get('courses', []), restrictions=restrictions)
+            elif t == 'course_options':
+                return CourseOptionsRequirement(data.get('options', []), data.get('min_required', 1), restrictions=restrictions)
+            elif t == 'course_filter':
+                return CourseFilterRequirement(
+                    subject=data.get('subject'),
+                    tags=data.get('tags'),
+                    min_level=data.get('min_level'),
+                    max_level=data.get('max_level'),
+                    min_credits=data.get('min_credits'),
+                    note=data.get('note'),
+                    restrictions=restrictions
+                )
+            elif t == 'compound':
+                op = data.get('op', 'OR')
+                options = [ProgramBuilder.build_requirement_from_db(opt) for opt in data.get('options',[])]
+                return CompoundRequirement(options, restrictions=restrictions, op=op)
+            else:
+                raise ValueError(f"Unknown requirement type: {t}")
+        # Otherwise, treat as ORM object
+        t = req_orm.type
+        data = req_orm.data or {}
+        restrictions = None  # TODO: handle restrictions if present in DB
         if t == 'course_list':
-            return CourseListRequirement(req_json['courses'], restrictions=restrictions)
+            return CourseListRequirement(data.get('courses', []), restrictions=restrictions)
         elif t == 'course_options':
-            return CourseOptionsRequirement(req_json['options'], req_json.get('min_required', 1), restrictions=restrictions)
+            return CourseOptionsRequirement(data.get('options', []), data.get('min_required', 1), restrictions=restrictions)
         elif t == 'course_filter':
             return CourseFilterRequirement(
-                subject=req_json.get('subject'),
-                tags=req_json.get('tags'),
-                min_level=req_json.get('min_level'),
-                max_level=req_json.get('max_level'),
-                min_credits=req_json.get('min_credits'),
-                note=req_json.get('note'),
+                subject=data.get('subject'),
+                tags=data.get('tags'),
+                min_level=data.get('min_level'),
+                max_level=data.get('max_level'),
+                min_credits=data.get('min_credits'),
+                note=data.get('note'),
                 restrictions=restrictions
             )
         elif t == 'compound':
-            op = req_json.get('op', 'OR')
-            return CompoundRequirement([
-                ProgramBuilder.build_requirement(opt) for opt in req_json['options']
-            ], restrictions=restrictions, op=op)
+            op = data.get('op', 'OR')
+            options = [ProgramBuilder.build_requirement_from_db(opt) for opt in data.get('options',[])]
+            return CompoundRequirement(options, restrictions=restrictions, op=op)
         else:
             raise ValueError(f"Unknown requirement type: {t}")
 
     @staticmethod
-    def build_restriction(rest_json):
-        t = rest_json.get('type')
-        if t == 'exclusion':
-            return ExclusionRestriction(
-                excluded_course_codes=rest_json.get('excluded_course_codes'),
-                excluded_numbers=rest_json.get('excluded_numbers'),
-                min_number=rest_json.get('min_number'),
-                max_number=rest_json.get('max_number'),
-                excluded_levels=rest_json.get('excluded_levels'),
-                subject=rest_json.get('subject')
-            )
-        elif t == 'course_group':
-            return CourseGroupRestriction(rest_json['courses'], rest_json['max_credits'])
-        elif t == 'credit_limit':
-            return CreditLimitRestriction(rest_json['courses'], rest_json['max_credits'])
-        elif t == 'distribution':
-            return DistributionRestriction(rest_json['courses'], rest_json['min_credits'])
-        elif t == 'tag_quota':
-            return TagQuotaRestriction(rest_json['tag'], rest_json['min_credits'])
-        elif t == 'subject_quota':
-            return SubjectQuotaRestriction(rest_json['subject'], rest_json.get('min_credits'), rest_json.get('max_credits'))
-        elif t == 'level_quota':
-            return LevelQuotaRestriction(rest_json['min_level'], rest_json['max_level'])
-        elif t == 'group':
-            return RestrictionGroup([
-                ProgramBuilder.build_restriction(r) for r in rest_json['restrictions']
-            ])
-        else:
-            raise ValueError(f"Unknown restriction type: {t}")
-
-    @staticmethod
-    def build_category(cat_json):
-        requirements = [ProgramBuilder.build_requirement(r) for r in cat_json.get('requirements', [])]
-        restrictions = None
-        if 'restrictions' in cat_json and cat_json['restrictions']:
-            built_restriction = ProgramBuilder.build_restriction(cat_json['restrictions'])
-            if built_restriction is not None:
-                if not isinstance(built_restriction, RestrictionGroup):
-                    restrictions = RestrictionGroup([built_restriction])
-                else:
-                    restrictions = built_restriction
+    def build_category_from_db(cat_orm):
+        requirements = [ProgramBuilder.build_requirement_from_db(req) for req in cat_orm.requirements]
+        restrictions = None  # TODO: handle restrictions if present in DB
         return RequirementCategory(
-            category=cat_json['category'],
-            min_credits=cat_json['min_credits'],
+            category=cat_orm.category,
+            min_credits=cat_orm.min_credits,
             requirements=requirements,
             restrictions=restrictions,
-            notes=cat_json.get('notes')
+            notes=cat_orm.notes
         )
 
     @staticmethod
-    def build_program(prog_json):
-        categories = [ProgramBuilder.build_category(cat) for cat in prog_json['categories']]
+    def build_program_from_db(prog_orm):
+        categories = [ProgramBuilder.build_category_from_db(cat) for cat in prog_orm.categories]
         return Program(
-            name=prog_json['name'],
-            type=prog_json['type'],
-            total_credits=prog_json['total_credits'],
+            name=prog_orm.name,
+            type=prog_orm.type,
+            total_credits=prog_orm.total_credits,
             categories=categories,
-            notes=prog_json.get('notes'),
-            school=prog_json.get('school')
+            notes=prog_orm.notes,
+            school=prog_orm.school
         )
 
     @staticmethod
-    def build_programs_from_file(json_path):
-        with open(json_path, 'r') as f:
-            data = json.load(f)
-        return [ProgramBuilder.build_program(prog) for prog in data] 
+    def build_programs_from_db():
+        session = SessionLocal()
+        orm_programs = session.query(ORMProgram).all()
+        programs = [ProgramBuilder.build_program_from_db(prog) for prog in orm_programs]
+        session.close()
+        return programs 
