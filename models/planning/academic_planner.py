@@ -46,8 +46,10 @@ class AcademicPlanner:
         for course_code, assignments in course_assignments.items():
             if not isinstance(course_code, str) or not course_code.strip():
                 raise ValueError(f"Invalid course code: {course_code}")
-            if not isinstance(assignments, list) or not all(isinstance(a, tuple) and len(a) == 2 for a in assignments):
+            # Accept both tuples and lists (from JSON) and convert all to tuples
+            if not isinstance(assignments, list) or not all((isinstance(a, (list, tuple)) and len(a) == 2) for a in assignments):
                 raise ValueError(f"Assignments for {course_code} must be a list of (program_name, category_name) tuples")
+            assignments = [tuple(a) for a in assignments]
             course = self.catalog.get_by_course_code(course_code)
             if course:
                 if course not in self.student_state.completed_courses:
