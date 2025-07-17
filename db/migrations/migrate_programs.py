@@ -4,6 +4,7 @@ from db.database import SessionLocal
 from db.models.program import Program
 from db.models.requirement_category import RequirementCategory
 from db.models.requirement import Requirement
+from config.config import PROGRAMS_PATH
 
 def load_programs(json_path):
     with open(json_path, 'r') as f:
@@ -11,7 +12,7 @@ def load_programs(json_path):
 
 def main():
     session = SessionLocal()
-    programs = load_programs('db/data/programs/majors.json')
+    programs = load_programs(PROGRAMS_PATH)
     for prog_data in programs:
         program = Program(
             name=prog_data.get('name'),

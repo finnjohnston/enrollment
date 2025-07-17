@@ -1,8 +1,9 @@
 from typing import Set
 from .dependency_graph import DependencyGraph
 import redis
+from config.config import REDIS_HOST, REDIS_PORT, REDIS_DB, REDIS_PASSWORD
 
-redis_client = redis.Redis(host='localhost', port=6379, db=0)
+redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, password=REDIS_PASSWORD)
 
 def _eligibility_cache_key(course_code, completed_courses, enrolled_courses):
     # Sort sets to ensure consistent key

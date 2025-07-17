@@ -1,5 +1,6 @@
 import re
 import json
+from config.config import COURSES_RAW_PATH, COURSES_PARSED_PATH
 
 class CourseParser:
     def __init__(self):
@@ -294,9 +295,9 @@ def test_req_parser():
 if __name__ == "__main__":
     test_req_parser()
 
-    with open("courses_raw.json") as f:
+    with open(COURSES_RAW_PATH) as f:
         raw_courses = json.load(f)
     parsed_courses = [CourseParser().parse_course(course) for course in raw_courses]
-    with open("courses_parsed.json", "w") as f:
+    with open(COURSES_PARSED_PATH, "w") as f:
         json.dump(parsed_courses, f, indent=2)
-    print(f"Parsed {len(parsed_courses)} courses and saved to courses_parsed.json")
+    print(f"Parsed {len(parsed_courses)} courses and saved to {COURSES_PARSED_PATH}")

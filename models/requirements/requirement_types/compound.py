@@ -5,8 +5,9 @@ from .course_list import CourseListRequirement
 from .course_options import CourseOptionsRequirement
 from .course_filter import CourseFilterRequirement
 import redis
+from config.config import REDIS_HOST, REDIS_PORT, REDIS_DB, REDIS_PASSWORD
 
-redis_client = redis.Redis(host='localhost', port=6379, db=0)
+redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, password=REDIS_PASSWORD)
 
 def _req_cache_key(prefix, op, options, completed_courses):
     completed = ','.join(sorted([c.get_course_code() for c in completed_courses]))

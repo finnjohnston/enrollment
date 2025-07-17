@@ -10,6 +10,7 @@ from models.requirements.program_builder import ProgramBuilder
 from models.planning.semester import Semester
 from models.planning.academic_planner import AcademicPlanner
 from models.requirements.policy_engine import PolicyEngine
+from config.config import DEFAULT_START_SEMESTER, DEFAULT_START_YEAR
 
 # Load data
 catalog = Catalog()
@@ -23,7 +24,7 @@ math_major = programs[1]
 policy_engine = PolicyEngine()
 
 # Initialize academic planner
-start_semester = Semester("Fall", 2024)
+start_semester = Semester(DEFAULT_START_SEMESTER, DEFAULT_START_YEAR)
 planner = AcademicPlanner(catalog, [cs_major, math_major], start_semester, policy_engine=policy_engine)
 
 print("=== Academic Planner Test ===\n")

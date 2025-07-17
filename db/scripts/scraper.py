@@ -10,6 +10,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import WebDriverException, TimeoutException
 import re
+from config.config import COURSES_RAW_PATH, CATALOG_URL
 
 class CourseScraper:
     """
@@ -32,12 +33,12 @@ class CourseScraper:
         service = Service(chromedriver_path)
         return webdriver.Chrome(service=service, options=chrome_options)
 
-    def save_progress(self, data, filename="scraping_progress.json"):
+    def save_progress(self, data, filename=COURSES_RAW_PATH):
         with open(filename, 'w') as f:
             json.dump(data, f, indent=2)
         print(f"Progress saved to {filename}")
 
-    def load_progress(self, filename="scraping_progress.json"):
+    def load_progress(self, filename=COURSES_RAW_PATH):
         if os.path.exists(filename):
             with open(filename, 'r') as f:
                 return json.load(f)
@@ -46,7 +47,7 @@ class CourseScraper:
     def get_subjects(self, max_retries: int = 3) -> List[Dict[str, str]]:
         for attempt in range(max_retries):
             try:
-                url = "https://www.vanderbilt.edu/catalogs/kuali/undergraduate-24-25.php#/courses"
+                url = CATALOG_URL
                 self.driver.get(url)
                 wait = WebDriverWait(self.driver, 20)
                 main_container = wait.until(EC.presence_of_element_located((By.ID, "kuali-catalog-main")))
@@ -332,11 +333,11 @@ class CourseScraper:
                 'completed': True
             })
 
-            with open('courses_raw.json', 'w') as f:
+            with open(COURSES_RAW_PATH, 'w') as f:
                 json.dump(all_courses, f, indent=2)
 
             print("Scraping completed successfully!")
-            print("Final data saved to 'courses_raw.json'")
+            print(f"Final data saved to '{COURSES_RAW_PATH}'")
             
         except Exception as e:
             print(f"Fatal error: {e}")

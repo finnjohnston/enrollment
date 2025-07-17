@@ -6,8 +6,9 @@ from models.requirements.requirement_types.course_list import CourseListRequirem
 from models.requirements.requirement_types.course_options import CourseOptionsRequirement
 from models.graph.logic import PrerequisiteLogic, CorequisiteLogic
 import redis
+from config.config import REDIS_HOST, REDIS_PORT, REDIS_DB, REDIS_PASSWORD
 
-redis_client = redis.Redis(host='localhost', port=6379, db=0)
+redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, password=REDIS_PASSWORD)
 
 def _graph_cache_key(course_code, traversal):
     return f"graph:{course_code}|traversal:{traversal}"

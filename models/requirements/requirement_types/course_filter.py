@@ -2,8 +2,9 @@ from typing import List, Optional, Union, cast
 from .requirement import Requirement
 from models.courses.course import Course
 import redis
+from config.config import REDIS_HOST, REDIS_PORT, REDIS_DB, REDIS_PASSWORD
 
-redis_client = redis.Redis(host='localhost', port=6379, db=0)
+redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, password=REDIS_PASSWORD)
 
 def _req_cache_key(prefix, subject, tags, min_level, max_level, min_credits, completed_courses):
     completed = ','.join(sorted([c.get_course_code() for c in completed_courses]))
