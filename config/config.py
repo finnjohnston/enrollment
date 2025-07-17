@@ -23,7 +23,7 @@ DATABASE_URL = os.getenv(
 )
 
 # === DATA FILE PATHS ===
-DATA_DIR = BASE_DIR / 'db' / 'data'~
+DATA_DIR = BASE_DIR / 'db' / 'data'
 COURSES_RAW_PATH = os.getenv('COURSES_RAW_PATH', str(DATA_DIR / 'courses' / 'raw.json'))
 COURSES_PARSED_PATH = os.getenv('COURSES_PARSED_PATH', str(DATA_DIR / 'courses' / 'parsed.json'))
 PROGRAMS_PATH = os.getenv('PROGRAMS_PATH', str(DATA_DIR / 'programs' / 'majors.json'))
