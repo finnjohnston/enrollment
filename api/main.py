@@ -95,6 +95,19 @@ def program_to_dict(p, i):
         'school': p.school
     }
 
+def serialize_recommendations(obj):
+    # Recursively serialize recommendations structure
+    if isinstance(obj, list):
+        return [serialize_recommendations(item) for item in obj]
+    elif hasattr(obj, 'to_dict'):
+        return obj.to_dict()
+    elif hasattr(obj, 'get_course_code'):
+        return obj.get_course_code()
+    elif isinstance(obj, dict):
+        return {k: serialize_recommendations(v) for k, v in obj.items()}
+    else:
+        return obj
+
 @app.get("/", tags=["Health"])
 def health_check():
     return {"status": "ok"}
@@ -187,7 +200,7 @@ def get_requirement(requirement_id: int):
         for c in p.categories:
             if requirement_id < len(c.requirements):
                 r = c.requirements[requirement_id]
-                return requirement_to_dict(r)
+                return requirement_to_dict(r, requirement_id)
     raise HTTPException(status_code=404, detail="Requirement not found")
 
 # --- Planning ---
@@ -261,7 +274,8 @@ def get_recommendations(plan_id: int):
     if not planner:
         raise HTTPException(status_code=404, detail="Plan not found")
     recs = planner.get_recommendations()
-    return RecommendationSchema(recommendations=recs)
+    recs_serialized = serialize_recommendations(recs)
+    return RecommendationSchema(recommendations=recs_serialized)
 
 # --- Validation ---
 @validation_router.post("/plans/{plan_id}/validate", response_model=ValidationResultSchema, tags=["Validation"])
