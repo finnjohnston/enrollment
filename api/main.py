@@ -159,6 +159,8 @@ def list_programs():
 
 @programs_router.get("/programs/{program_id}", response_model=ProgramSchema, tags=["Programs"])
 def get_program(program_id: int):
+    if program_id < 0:
+        raise HTTPException(status_code=404, detail="Program not found")
     programs = get_programs()
     if program_id < 0 or program_id >= len(programs):
         raise HTTPException(status_code=404, detail="Program not found")
@@ -167,6 +169,8 @@ def get_program(program_id: int):
 
 @programs_router.get("/programs/{program_id}/categories", response_model=List[CategorySchema], tags=["Programs"])
 def list_program_categories(program_id: int):
+    if program_id < 0:
+        raise HTTPException(status_code=404, detail="Program not found")
     programs = get_programs()
     if program_id < 0 or program_id >= len(programs):
         raise HTTPException(status_code=404, detail="Program not found")
@@ -176,6 +180,8 @@ def list_program_categories(program_id: int):
 # --- Categories ---
 @categories_router.get("/categories/{category_id}", response_model=CategorySchema, tags=["Categories"])
 def get_category(category_id: int):
+    if category_id < 0:
+        raise HTTPException(status_code=404, detail="Category not found")
     programs = get_programs()
     for p in programs:
         if category_id < len(p.categories):
@@ -185,6 +191,8 @@ def get_category(category_id: int):
 
 @categories_router.get("/categories/{category_id}/requirements", response_model=List[RequirementSchema], tags=["Categories"])
 def list_category_requirements(category_id: int):
+    if category_id < 0:
+        raise HTTPException(status_code=404, detail="Category not found")
     programs = get_programs()
     for p in programs:
         if category_id < len(p.categories):
@@ -195,6 +203,8 @@ def list_category_requirements(category_id: int):
 # --- Requirements ---
 @requirements_router.get("/requirements/{requirement_id}", response_model=RequirementSchema, tags=["Requirements"])
 def get_requirement(requirement_id: int):
+    if requirement_id < 0:
+        raise HTTPException(status_code=404, detail="Requirement not found")
     programs = get_programs()
     for p in programs:
         for c in p.categories:
@@ -227,6 +237,8 @@ def create_plan(plan: PlanCreateSchema):
 
 @planning_router.get("/plans/{plan_id}", response_model=PlanSchema, tags=["Planning"])
 def get_plan(plan_id: int):
+    if plan_id < 0:
+        raise HTTPException(status_code=404, detail="Plan not found")
     planner = plans.get(plan_id)
     if not planner:
         raise HTTPException(status_code=404, detail="Plan not found")
@@ -239,7 +251,9 @@ def get_plan(plan_id: int):
     }
 
 @planning_router.post("/plans/{plan_id}/add_completed_course", response_model=PlanSchema, tags=["Planning"])
-def add_completed_course(plan_id: int, data: Dict[str, List[Any]] = Body(...)):
+def add_completed_course(plan_id: int, data: dict = Body(...)):
+    if plan_id < 0:
+        raise HTTPException(status_code=404, detail="Plan not found")
     planner = plans.get(plan_id)
     if not planner:
         raise HTTPException(status_code=404, detail="Plan not found")
@@ -247,7 +261,9 @@ def add_completed_course(plan_id: int, data: Dict[str, List[Any]] = Body(...)):
     return get_plan(plan_id)
 
 @planning_router.post("/plans/{plan_id}/remove_completed_course", response_model=PlanSchema, tags=["Planning"])
-def remove_completed_course(plan_id: int, data: Dict[str, Any] = Body(...)):
+def remove_completed_course(plan_id: int, data: dict = Body(...)):
+    if plan_id < 0:
+        raise HTTPException(status_code=404, detail="Plan not found")
     planner = plans.get(plan_id)
     if not planner:
         raise HTTPException(status_code=404, detail="Plan not found")
@@ -257,6 +273,8 @@ def remove_completed_course(plan_id: int, data: Dict[str, Any] = Body(...)):
 
 @planning_router.post("/plans/{plan_id}/advance_semester", response_model=PlanSchema, tags=["Planning"])
 def advance_semester(plan_id: int):
+    if plan_id < 0:
+        raise HTTPException(status_code=404, detail="Plan not found")
     planner = plans.get(plan_id)
     if not planner:
         raise HTTPException(status_code=404, detail="Plan not found")
@@ -265,11 +283,15 @@ def advance_semester(plan_id: int):
 
 @planning_router.get("/plans/{plan_id}/progress", response_model=PlanSchema, tags=["Planning"])
 def get_progress(plan_id: int):
+    if plan_id < 0:
+        raise HTTPException(status_code=404, detail="Plan not found")
     return get_plan(plan_id)
 
 # --- Recommendations ---
 @recommendations_router.get("/plans/{plan_id}/recommendations", response_model=RecommendationSchema, tags=["Recommendations"])
 def get_recommendations(plan_id: int):
+    if plan_id < 0:
+        raise HTTPException(status_code=404, detail="Plan not found")
     planner = plans.get(plan_id)
     if not planner:
         raise HTTPException(status_code=404, detail="Plan not found")
@@ -280,6 +302,8 @@ def get_recommendations(plan_id: int):
 # --- Validation ---
 @validation_router.post("/plans/{plan_id}/validate", response_model=ValidationResultSchema, tags=["Validation"])
 def validate_plan(plan_id: int):
+    if plan_id < 0:
+        raise HTTPException(status_code=404, detail="Plan not found")
     planner = plans.get(plan_id)
     if not planner:
         raise HTTPException(status_code=404, detail="Plan not found")
@@ -292,12 +316,14 @@ def validate_plan(plan_id: int):
 
 @validation_router.post("/plans/{plan_id}/validate_semester", response_model=ValidationResultSchema, tags=["Validation"])
 def validate_semester(plan_id: int):
-    # For now, use full plan validation
+    if plan_id < 0:
+        raise HTTPException(status_code=404, detail="Plan not found")
     return validate_plan(plan_id)
 
 @validation_router.post("/plans/{plan_id}/validate_assignment", response_model=ValidationResultSchema, tags=["Validation"])
 def validate_assignment(plan_id: int):
-    # For now, use full plan validation
+    if plan_id < 0:
+        raise HTTPException(status_code=404, detail="Plan not found")
     return validate_plan(plan_id)
 
 # --- Policies ---
