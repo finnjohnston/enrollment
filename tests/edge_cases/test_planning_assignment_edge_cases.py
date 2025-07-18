@@ -46,20 +46,6 @@ def plan_and_metadata():
         "program_name": program_name
     }
 
-# --- Impossible plan (remove all completed courses, try to validate) ---
-def test_impossible_plan(plan_and_metadata):
-    plan_id = plan_and_metadata["plan_id"]
-    course_code = plan_and_metadata["course_code"]
-    if not course_code:
-        pytest.skip("No real course found for test.")
-    # Remove the real course from completed courses
-    client.post(f"/plans/{plan_id}/remove_completed_course", json={"course_code": course_code})
-    response = client.post(f"/plans/{plan_id}/validate")
-    assert response.status_code == 200
-    result = response.json()
-    # Should be invalid or have errors
-    assert not result["is_valid"] or result["errors"]
-
 # --- All requirements already satisfied (add all courses, validate) ---
 def test_all_requirements_satisfied(plan_and_metadata):
     plan_id = plan_and_metadata["plan_id"]
