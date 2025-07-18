@@ -4,6 +4,7 @@ from models.requirements.requirement_types.course_filter import CourseFilterRequ
 from models.requirements.requirement_types.course_options import CourseOptionsRequirement
 from models.requirements.restrictions.group import RestrictionGroup
 from models.courses.course import Course
+from core.exceptions import InvalidCategoryError, InvalidCreditsError, EnrollmentError
 
 class RequirementCategory:
     """
@@ -12,11 +13,11 @@ class RequirementCategory:
 
     def __init__(self, category: str, min_credits: int, requirements: Optional[Sequence[Requirement]] = None, restrictions: Optional[RestrictionGroup] = None, notes: Optional[str] = None):
         if not isinstance(category, str) or not category.strip():
-            raise ValueError("category must be a non-empty string")
+            raise InvalidCategoryError("category must be a non-empty string")
         if not isinstance(min_credits, int) or min_credits < 0:
-            raise ValueError("min_credits must be a non-negative integer")
+            raise InvalidCreditsError("min_credits must be a non-negative integer")
         if requirements is not None and not all(isinstance(req, Requirement) for req in requirements):
-            raise ValueError("All requirements must be Requirement instances")
+            raise InvalidRequirementError("All requirements must be Requirement instances")
         self.category = category
         self.min_credits = min_credits
         self.requirements = list(requirements) if requirements else []
@@ -67,7 +68,7 @@ class RequirementCategory:
                         if code not in used_courses:
                             earned += course.get_credit_hours()
                             used_courses.add(code)
-            except Exception as e:
+            except EnrollmentError as e:
                 continue
 
         restriction_results = []

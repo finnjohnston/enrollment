@@ -9,6 +9,7 @@ from models.courses.course import Course
 from models.courses.catalog import Catalog
 from models.graph.eligibility import CourseEligibility
 from models.graph.dependency_graph import DependencyGraph
+from core.exceptions import EnrollmentError
 
 
 def get_unmet_requirements(programs: List[Program], completed_courses: List[Course], requirement_assignments: Optional[Dict[str, List[Tuple[str, str]]]] = None) -> Dict[Tuple[str, str], List[Requirement]]:
@@ -82,7 +83,7 @@ def get_unmet_requirements(programs: List[Program], completed_courses: List[Cour
                                     break
                     else:
                         is_satisfied = satisfied_credits > 0
-                except Exception:
+                except EnrollmentError:
                     is_satisfied = False
                 if not is_satisfied:
                     unmet_reqs.append(req)

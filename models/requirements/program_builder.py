@@ -8,6 +8,7 @@ from db.database import SessionLocal
 from db.models.program import Program as ORMProgram
 from db.models.requirement_category import RequirementCategory as ORMCategory
 from db.models.requirement import Requirement as ORMRequirement
+from core.exceptions import UnknownRequirementTypeError
 
 class ProgramBuilder:
     @staticmethod
@@ -36,7 +37,7 @@ class ProgramBuilder:
                 options = [ProgramBuilder.build_requirement_from_db(opt) for opt in data.get('options',[])]
                 return CompoundRequirement(options, restrictions=restrictions, op=op)
             else:
-                raise ValueError(f"Unknown requirement type: {t}")
+                raise UnknownRequirementTypeError(f"Unknown requirement type: {t}")
         # Otherwise, treat as ORM object
         t = req_orm.type
         data = req_orm.data or {}
@@ -60,7 +61,7 @@ class ProgramBuilder:
             options = [ProgramBuilder.build_requirement_from_db(opt) for opt in data.get('options',[])]
             return CompoundRequirement(options, restrictions=restrictions, op=op)
         else:
-            raise ValueError(f"Unknown requirement type: {t}")
+            raise UnknownRequirementTypeError(f"Unknown requirement type: {t}")
 
     @staticmethod
     def build_category_from_db(cat_orm):

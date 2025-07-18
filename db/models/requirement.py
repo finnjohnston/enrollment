@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship, validates
 from .base import Base
+from core.exceptions import InvalidRequirementError, InvalidCreditsError
 
 class Requirement(Base):
     __tablename__ = 'requirements'
@@ -20,17 +21,17 @@ class Requirement(Base):
     @validates('type')
     def validate_type(self, key, value):
         if not isinstance(value, str) or not value.strip():
-            raise ValueError("type must be a non-empty string")
+            raise InvalidRequirementError("type must be a non-empty string")
         return value
 
     @validates('data')
     def validate_data(self, key, value):
         if not isinstance(value, dict):
-            raise ValueError("data must be a dictionary")
+            raise InvalidRequirementError("data must be a dictionary")
         return value
 
     @validates('min_credits')
     def validate_min_credits(self, key, value):
         if value is not None and (not isinstance(value, int) or value < 0):
-            raise ValueError("min_credits must be a non-negative integer")
+            raise InvalidCreditsError("min_credits must be a non-negative integer")
         return value 

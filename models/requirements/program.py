@@ -1,6 +1,7 @@
 from typing import List, Optional, Literal, Dict
 from .category import RequirementCategory
 from models.courses.course import Course
+from core.exceptions import InvalidProgramError, InvalidCategoryError
 
 class Program:
     """
@@ -9,13 +10,13 @@ class Program:
 
     def __init__(self, name: str, type: Literal["major", "minor"], total_credits: int, categories: Optional[List[RequirementCategory]] = None, notes: Optional[str] = None, school: Optional[str] = None):
         if not isinstance(name, str) or not name.strip():
-            raise ValueError("Program name must be a non-empty string")
+            raise InvalidProgramError("Program name must be a non-empty string")
         if not isinstance(type, str) or type not in ("major", "minor"):
-            raise ValueError("Program type must be 'major' or 'minor'")
+            raise InvalidProgramError("Program type must be 'major' or 'minor'")
         if not isinstance(total_credits, int) or total_credits <= 0:
-            raise ValueError("total_credits must be a positive integer")
+            raise InvalidProgramError("total_credits must be a positive integer")
         if categories is not None and not all(isinstance(cat, RequirementCategory) for cat in categories):
-            raise ValueError("All categories must be RequirementCategory instances")
+            raise InvalidCategoryError("All categories must be RequirementCategory instances")
         self.name = name
         self.type = type
         self.total_credits = total_credits

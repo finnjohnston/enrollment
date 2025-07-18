@@ -3,6 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from db.database import SessionLocal
 from db.models.course import Course
 import re
+from core.exceptions import InvalidRequirementError
 
 def parse_credits(credits):
     if credits is None:
@@ -15,7 +16,7 @@ def parse_credits(credits):
             return int(match.group(1))
         try:
             return int(credits)
-        except ValueError:
+        except InvalidRequirementError:
             return None
     return None
 

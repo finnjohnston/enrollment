@@ -3,6 +3,7 @@ from .requirement import Requirement
 from models.courses.course import Course
 import redis
 from config.config import REDIS_HOST, REDIS_PORT, REDIS_DB, REDIS_PASSWORD
+from core.exceptions import InvalidRequirementError, InvalidCreditsError, EnrollmentError
 
 redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, password=REDIS_PASSWORD)
 
@@ -27,17 +28,17 @@ class CourseFilterRequirement(Requirement):
                  min_credits: Optional[int] = None, note: Optional[str] = None, restrictions=None):
         super().__init__(restrictions=restrictions)
         if subject is not None and not isinstance(subject, str):
-            raise ValueError("subject must be a string if provided")
+            raise InvalidRequirementError("subject must be a string if provided")
         if isinstance(tags, str):
             tags = [tags]
         if tags is not None and not all(isinstance(tag, str) for tag in tags):
-            raise ValueError("tags must be a list of strings")
+            raise InvalidRequirementError("tags must be a list of strings")
         if min_level is not None and (not isinstance(min_level, int) or min_level < 0):
-            raise ValueError("min_level must be a non-negative integer")
+            raise InvalidCreditsError("min_level must be a non-negative integer")
         if max_level is not None and (not isinstance(max_level, int) or max_level < 0):
-            raise ValueError("max_level must be a non-negative integer")
+            raise InvalidCreditsError("max_level must be a non-negative integer")
         if min_credits is not None and (not isinstance(min_credits, int) or min_credits < 0):
-            raise ValueError("min_credits must be a non-negative integer")
+            raise InvalidCreditsError("min_credits must be a non-negative integer")
         self.subject = subject
         self.tags = tags if tags is not None else []
         self.min_level = min_level
@@ -65,7 +66,7 @@ class CourseFilterRequirement(Requirement):
         if isinstance(cached, bytes):
             try:
                 return int(cached.decode())
-            except Exception:
+            except EnrollmentError:
                 invalidate_requirement_cache()
         total = 0
         for course in completed_courses:
@@ -80,7 +81,7 @@ class CourseFilterRequirement(Requirement):
                 if self.max_level and (course.level is None or course.level > self.max_level):
                     continue
                 total += course.get_credit_hours()
-            except Exception as e:
+            except EnrollmentError as e:
                 print(f"Warning: Error processing course {course}: {e}")
                 continue
         redis_client.set(key, total)
@@ -94,7 +95,7 @@ class CourseFilterRequirement(Requirement):
             import pickle
             try:
                 return pickle.loads(cached)
-            except Exception:
+            except EnrollmentError:
                 invalidate_requirement_cache()
         matching = []
         for course in completed_courses:
@@ -109,7 +110,7 @@ class CourseFilterRequirement(Requirement):
                 if self.max_level and (course.level is None or course.level > self.max_level):
                     continue
                 matching.append(course)
-            except Exception as e:
+            except EnrollmentError as e:
                 print(f"Warning: Error processing course {course}: {e}")
                 continue
         import pickle
@@ -136,7 +137,7 @@ class CourseFilterRequirement(Requirement):
                 if self.max_level and (course.level is None or course.level > self.max_level):
                     continue
                 filtered.append(course)
-            except Exception as e:
+            except EnrollmentError as e:
                 print(f"Warning: Error processing course {course}: {e}")
                 continue
         # Apply per-requirement restrictions if present

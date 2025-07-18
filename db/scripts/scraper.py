@@ -11,6 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import WebDriverException, TimeoutException
 import re
 from config.config import COURSES_RAW_PATH, CATALOG_URL
+from core.exceptions import EnrollmentError
 
 class CourseScraper:
     """

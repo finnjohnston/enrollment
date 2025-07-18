@@ -1,5 +1,6 @@
 from collections import defaultdict
 from typing import List, Optional, Dict, Any
+from core.exceptions import InvalidCourseError, InvalidCreditsError, InvalidLevelError
 
 class Course:
     """
@@ -28,13 +29,13 @@ class Course:
 
         # Validation
         if not isinstance(self.course_code, str) or not self.course_code.strip():
-            raise ValueError("course_code must be a non-empty string")
+            raise InvalidCourseError("course_code must be a non-empty string")
         if not isinstance(self.title, str) or not self.title.strip():
-            raise ValueError("title must be a non-empty string")
+            raise InvalidCourseError("title must be a non-empty string")
         if self.credits is not None and (not isinstance(self.credits, int) or self.credits < 0):
-            raise ValueError("credits must be a non-negative integer")
+            raise InvalidCreditsError("credits must be a non-negative integer")
         if self.level is not None and (not isinstance(self.level, int) or self.level < 0):
-            raise ValueError("level must be a non-negative integer")
+            raise InvalidLevelError("level must be a non-negative integer")
 
     @classmethod
     def from_orm(cls, orm_course):
@@ -53,13 +54,13 @@ class Course:
         }
         # Validation
         if not isinstance(data['course_code'], str) or not data['course_code'].strip():
-            raise ValueError("course_code must be a non-empty string")
+            raise InvalidCourseError("course_code must be a non-empty string")
         if not isinstance(data['title'], str) or not data['title'].strip():
-            raise ValueError("title must be a non-empty string")
+            raise InvalidCourseError("title must be a non-empty string")
         if data['credits'] is not None and (not isinstance(data['credits'], int) or data['credits'] < 0):
-            raise ValueError("credits must be a non-negative integer")
+            raise InvalidCreditsError("credits must be a non-negative integer")
         if data['level'] is not None and (not isinstance(data['level'], int) or data['level'] < 0):
-            raise ValueError("level must be a non-negative integer")
+            raise InvalidLevelError("level must be a non-negative integer")
         return cls(data)
 
     def __str__(self):

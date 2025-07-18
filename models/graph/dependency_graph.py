@@ -7,6 +7,7 @@ from models.requirements.requirement_types.course_options import CourseOptionsRe
 from models.graph.logic import PrerequisiteLogic, CorequisiteLogic
 import redis
 from config.config import REDIS_HOST, REDIS_PORT, REDIS_DB, REDIS_PASSWORD
+from core.exceptions import ResourceNotFoundError
 
 redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, password=REDIS_PASSWORD)
 
@@ -50,7 +51,7 @@ class DependencyGraph:
         """
         course = self.catalog.get_by_course_code(course_code)
         if not course:
-            raise ValueError(f"Course '{course_code}' not found in catalog.")
+            raise ResourceNotFoundError(f"Course '{course_code}' not found in catalog.")
 
         def extract_requisites_and_of_ors(reqs):
             if not reqs:

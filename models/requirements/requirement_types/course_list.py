@@ -1,6 +1,7 @@
 from .requirement import Requirement
 import redis
 from config.config import REDIS_HOST, REDIS_PORT, REDIS_DB, REDIS_PASSWORD
+from core.exceptions import InvalidRequirementError, EnrollmentError
 
 redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, password=REDIS_PASSWORD)
 
@@ -21,7 +22,7 @@ class CourseListRequirement(Requirement):
     def __init__(self, courses, restrictions=None):
         super().__init__(restrictions=restrictions)
         if not isinstance(courses, list) or not all(isinstance(c, str) and c.strip() for c in courses):
-            raise ValueError("courses must be a list of non-empty strings")
+            raise InvalidRequirementError("courses must be a list of non-empty strings")
         self.courses = courses
 
     def describe(self):
@@ -33,7 +34,7 @@ class CourseListRequirement(Requirement):
         if isinstance(cached, bytes):
             try:
                 return int(cached.decode())
-            except Exception:
+            except EnrollmentError:
                 invalidate_requirement_cache()
         result = sum(
             course.get_credit_hours()
@@ -51,7 +52,7 @@ class CourseListRequirement(Requirement):
             import pickle
             try:
                 return pickle.loads(cached)
-            except Exception:
+            except EnrollmentError:
                 invalidate_requirement_cache()
         result = [course for course in completed_courses if course.get_course_code() in self.courses]
         import pickle

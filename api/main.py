@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, APIRouter, Body
+from fastapi import FastAPI, HTTPException, Depends, APIRouter, Body, Request
 from typing import List, Dict, Any
 from api.schemas import CourseSchema, ProgramSchema, CategorySchema, RequirementSchema, PlanCreateSchema, PlanSchema, RecommendationSchema, ValidationResultSchema
 from models.courses.catalog import Catalog
@@ -7,8 +7,36 @@ from models.requirements.policy_engine import PolicyEngine
 from models.planning.academic_planner import AcademicPlanner
 from models.planning.semester import Semester
 import threading
+from fastapi.responses import JSONResponse
+from core.exceptions import EnrollmentError, ResourceNotFoundError
+from core.logging import get_logger
 
 app = FastAPI(title="Academic Planning API")
+logger = get_logger(__name__)
+
+@app.exception_handler(EnrollmentError)
+async def enrollment_exception_handler(request: Request, exc: EnrollmentError):
+    logger.error(f"EnrollmentError: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=400,
+        content={"detail": str(exc)}
+    )
+
+@app.exception_handler(ResourceNotFoundError)
+async def resource_not_found_exception_handler(request: Request, exc: ResourceNotFoundError):
+    logger.error(f"ResourceNotFoundError: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=404,
+        content={"detail": str(exc)}
+    )
+
+@app.exception_handler(Exception)
+async def generic_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled Exception: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error"}
+    )
 
 # --- Routers ---
 courses_router = APIRouter()

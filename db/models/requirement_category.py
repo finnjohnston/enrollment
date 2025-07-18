@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey
 from sqlalchemy.orm import relationship, validates
 from .base import Base
+from core.exceptions import InvalidCategoryError, InvalidCreditsError
 
 class RequirementCategory(Base):
     __tablename__ = 'requirement_categories'
@@ -19,11 +20,11 @@ class RequirementCategory(Base):
     @validates('category')
     def validate_category(self, key, value):
         if not isinstance(value, str) or not value.strip():
-            raise ValueError("category must be a non-empty string")
+            raise InvalidCategoryError("category must be a non-empty string")
         return value
 
     @validates('min_credits')
     def validate_min_credits(self, key, value):
         if not isinstance(value, int) or value < 0:
-            raise ValueError("min_credits must be a non-negative integer")
+            raise InvalidCreditsError("min_credits must be a non-negative integer")
         return value 

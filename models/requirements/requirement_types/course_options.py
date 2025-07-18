@@ -1,6 +1,7 @@
 from .requirement import Requirement
 import redis
 from config.config import REDIS_HOST, REDIS_PORT, REDIS_DB, REDIS_PASSWORD
+from core.exceptions import InvalidRequirementError, EnrollmentError
 
 redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, password=REDIS_PASSWORD)
 
@@ -22,9 +23,9 @@ class CourseOptionsRequirement(Requirement):
     def __init__(self, options, min_required = 1, restrictions=None):
         super().__init__(restrictions=restrictions)
         if not isinstance(options, list) or not all(isinstance(o, str) and o.strip() for o in options):
-            raise ValueError("options must be a list of non-empty strings")
+            raise InvalidRequirementError("options must be a list of non-empty strings")
         if not isinstance(min_required, int) or min_required < 1:
-            raise ValueError("min_required must be a positive integer")
+            raise InvalidRequirementError("min_required must be a positive integer")
         self.options = options
         self.min_required = min_required
 
@@ -37,7 +38,7 @@ class CourseOptionsRequirement(Requirement):
         if isinstance(cached, bytes):
             try:
                 return int(cached.decode())
-            except Exception:
+            except EnrollmentError:
                 invalidate_requirement_cache()
         matching = [
             (course, course.get_credit_hours())
@@ -56,7 +57,7 @@ class CourseOptionsRequirement(Requirement):
             import pickle
             try:
                 return pickle.loads(cached)
-            except Exception:
+            except EnrollmentError:
                 invalidate_requirement_cache()
         result = [course for course in completed_courses if course.get_course_code() in self.options]
         import pickle

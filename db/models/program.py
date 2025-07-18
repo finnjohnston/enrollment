@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import relationship, validates
 from .base import Base
+from core.exceptions import InvalidProgramError
 
 class Program(Base):
     __tablename__ = 'programs'
@@ -21,17 +22,17 @@ class Program(Base):
     @validates('name', 'type')
     def validate_non_empty_string(self, key, value):
         if not isinstance(value, str) or not value.strip():
-            raise ValueError(f"{key} must be a non-empty string")
+            raise InvalidProgramError(f"{key} must be a non-empty string")
         return value
 
     @validates('total_credits')
     def validate_total_credits(self, key, value):
         if not isinstance(value, int) or value <= 0:
-            raise ValueError("total_credits must be a positive integer")
+            raise InvalidProgramError("total_credits must be a positive integer")
         return value
 
     @validates('school')
     def validate_school(self, key, value):
         if value is not None and (not isinstance(value, str) or not value.strip()):
-            raise ValueError("school must be a non-empty string if provided")
+            raise InvalidProgramError("school must be a non-empty string if provided")
         return value 

@@ -1,6 +1,7 @@
 from typing import Dict, List, Tuple, Any, Callable
 import json
 import os
+from core.exceptions import PolicyConfigError, UnknownPolicyRuleError
 
 # Rule function registry
 RULE_FUNCTIONS: Dict[str, Callable] = {}
@@ -60,15 +61,15 @@ class PolicyEngine:
                 self.policy_config = json.load(f)
         # Validation
         if not isinstance(self.policy_config, list) or not all(isinstance(p, dict) for p in self.policy_config):
-            raise ValueError("policy_config must be a list of dicts")
+            raise PolicyConfigError("policy_config must be a list of dicts")
         for policy in self.policy_config:
             if 'program_types' not in policy or 'rules' not in policy:
-                raise ValueError("Each policy must have 'program_types' and 'rules'")
+                raise PolicyConfigError("Each policy must have 'program_types' and 'rules'")
             if not isinstance(policy['rules'], list):
-                raise ValueError("'rules' must be a list")
+                raise PolicyConfigError("'rules' must be a list")
             for rule in policy['rules']:
                 if 'type' not in rule or rule['type'] not in RULE_FUNCTIONS:
-                    raise ValueError(f"Rule type '{rule.get('type')}' is not registered in RULE_FUNCTIONS")
+                    raise UnknownPolicyRuleError(f"Rule type '{rule.get('type')}' is not registered in RULE_FUNCTIONS")
 
     def get_policy(self, programs: List[Any]) -> List[Dict]:
         # Find all policies that match the set of program types

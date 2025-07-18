@@ -11,6 +11,7 @@ from models.planning.requirement_assigner import RequirementAssigner
 from models.requirements.policy_engine import PolicyEngine
 from models.requirements.requirement_types.course_list import invalidate_requirement_cache
 from models.graph.dependency_graph import invalidate_graph_cache
+from core.exceptions import InvalidCourseError, InvalidAssignmentError, InvalidProgramError, InvalidCategoryError
 
 
 class AcademicPlanner:
@@ -45,10 +46,10 @@ class AcademicPlanner:
         """
         for course_code, assignments in course_assignments.items():
             if not isinstance(course_code, str) or not course_code.strip():
-                raise ValueError(f"Invalid course code: {course_code}")
+                raise InvalidCourseError(f"Invalid course code: {course_code}")
             # Accept both tuples and lists (from JSON) and convert all to tuples
             if not isinstance(assignments, list) or not all((isinstance(a, (list, tuple)) and len(a) == 2) for a in assignments):
-                raise ValueError(f"Assignments for {course_code} must be a list of (program_name, category_name) tuples")
+                raise InvalidAssignmentError(f"Assignments for {course_code} must be a list of (program_name, category_name) tuples")
             assignments = [tuple(a) for a in assignments]
             course = self.catalog.get_by_course_code(course_code)
             if course:
@@ -56,9 +57,9 @@ class AcademicPlanner:
                     self.student_state.completed_courses.append(course)
                 for program_name, category in assignments:
                     if not isinstance(program_name, str) or not program_name.strip():
-                        raise ValueError(f"Invalid program name: {program_name}")
+                        raise InvalidProgramError(f"Invalid program name: {program_name}")
                     if not isinstance(category, str) or not category.strip():
-                        raise ValueError(f"Invalid category name: {category}")
+                        raise InvalidCategoryError(f"Invalid category name: {category}")
                     self.assigner.assign_course_to_requirement(course, category)
                     print(f"Added {course_code} for {program_name} - {category}")
             else:
@@ -168,18 +169,18 @@ class AcademicPlanner:
         results = {}
         for course_code, assignments in chosen_courses.items():
             if not isinstance(course_code, str) or not course_code.strip():
-                raise ValueError(f"Invalid course code: {course_code}")
+                raise InvalidCourseError(f"Invalid course code: {course_code}")
             if not isinstance(assignments, list) or not all(isinstance(a, tuple) and len(a) == 2 for a in assignments):
-                raise ValueError(f"Assignments for {course_code} must be a list of (program_name, category_name) tuples")
+                raise InvalidAssignmentError(f"Assignments for {course_code} must be a list of (program_name, category_name) tuples")
             course = self.catalog.get_by_course_code(course_code)
             if course:
                 if course not in self.student_state.completed_courses:
                     self.student_state.completed_courses.append(course)
                 for program_name, category in assignments:
                     if not isinstance(program_name, str) or not program_name.strip():
-                        raise ValueError(f"Invalid program name: {program_name}")
+                        raise InvalidProgramError(f"Invalid program name: {program_name}")
                     if not isinstance(category, str) or not category.strip():
-                        raise ValueError(f"Invalid category name: {category}")
+                        raise InvalidCategoryError(f"Invalid category name: {category}")
                     success = self.assigner.assign_course_to_requirement(course, category)
                     results[f"{course_code} -> {program_name} - {category}"] = success
                     if success:

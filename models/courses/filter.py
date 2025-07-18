@@ -1,6 +1,7 @@
 from typing import List, Optional, Union, Dict, Set
 from .course import Course
 from .catalog import Catalog
+from core.exceptions import InvalidCourseError
 
 class Filter:
     """
@@ -76,7 +77,7 @@ class Filter:
                 continue
             try:
                 credit_val = int(str(credit_raw).strip())
-            except ValueError:
+            except InvalidCourseError:
                 continue  # Skip if it can't be cleanly converted to an int
             if credit_val in target:
                 result.append(course)
